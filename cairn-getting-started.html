@@ -409,7 +409,17 @@ python -m venv .venv
           <span class="code-lang-label">Terminal</span>
           <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         </div>
-        <pre>cairn --help</pre>
+        <pre>cairn --help
+<span class="cm"># Or if cairn isn't on your PATH yet:</span>
+python -m cairn --help</pre>
+      </div>
+
+      <div class="callout callout-warn">
+        <span class="callout-icon">🪟</span>
+        <div class="callout-body">
+          <strong>Windows: "cairn is not recognized"?</strong>
+          <p>Use <code>python -m cairn</code> instead — it's identical in every way. This happens when pip installs scripts to a folder not yet on your PATH, or when a virtual environment isn't activated. Every <code>cairn</code> command in this guide can be run as <code>python -m cairn</code>.</p>
+        </div>
       </div>
 
       <p style="color:var(--muted); font-size:13px; margin-bottom:8px;">Expected output — if you see this, you're good to go:</p>
@@ -783,7 +793,9 @@ Commands:
             <h3>Run the validator</h3>
             <div class="code-wrap">
               <div class="code-header"><div class="code-dot-row"><span class="code-dot dot-red"></span><span class="code-dot dot-yellow"></span><span class="code-dot dot-green"></span></div><span class="code-lang-label">Terminal</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-              <pre>cairn validate examples/change-management/context-spec.yaml</pre>
+              <pre>cairn validate examples/change-management/context-spec.yaml
+<span class="cm"># Or:</span>
+python -m cairn validate examples/change-management/context-spec.yaml</pre>
             </div>
           </div>
         </div>
@@ -866,7 +878,9 @@ Commands:
           <span class="code-lang-label">Terminal</span>
           <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         </div>
-        <pre>cairn dry-run examples/change-management/context-spec.yaml</pre>
+        <pre>cairn dry-run examples/change-management/context-spec.yaml
+<span class="cm"># Or:</span>
+python -m cairn dry-run examples/change-management/context-spec.yaml</pre>
       </div>
 
       <p style="color:var(--muted); font-size:13px; margin: 12px 0 8px;">You'll see this output — one line per stage and gate:</p>
@@ -1023,7 +1037,9 @@ Commands:
 cp templates/starter/context-spec.yaml my-workflow.yaml
 
 <span class="cm"># Edit it, then validate</span>
-cairn validate my-workflow.yaml</pre>
+cairn validate my-workflow.yaml
+<span class="cm"># Or:</span>
+python -m cairn validate my-workflow.yaml</pre>
             </div>
           </div>
         </div>
@@ -1052,9 +1068,13 @@ cairn validate my-workflow.yaml</pre>
               <div class="code-header"><div class="code-dot-row"><span class="code-dot dot-red"></span><span class="code-dot dot-yellow"></span><span class="code-dot dot-green"></span></div><span class="code-lang-label">Terminal</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
               <pre><span class="cm"># Generate self-contained agent files from your spec</span>
 cairn export-agents examples/change-management/context-spec.yaml
+<span class="cm"># Or:</span>
+python -m cairn export-agents examples/change-management/context-spec.yaml
 
 <span class="cm"># Opens the SME knowledge capture tool in your browser</span>
-cairn sme-walkthrough</pre>
+cairn sme-walkthrough
+<span class="cm"># Or:</span>
+python -m cairn sme-walkthrough</pre>
             </div>
           </div>
         </div>
@@ -1077,23 +1097,23 @@ cairn sme-walkthrough</pre>
             <td style="color:rgba(255,255,255,0.7);">Install from local repo folder (run from repo root)</td>
           </tr>
           <tr style="border-color: rgba(255,255,255,0.08);">
-            <td><code style="background:rgba(255,255,255,0.1); color:#60a5fa; border-color:rgba(255,255,255,0.15);">cairn --help</code></td>
+            <td><code style="background:rgba(255,255,255,0.1); color:#60a5fa; border-color:rgba(255,255,255,0.15);">cairn --help</code> or <code style="background:rgba(255,255,255,0.1); color:#60a5fa; border-color:rgba(255,255,255,0.15);">python -m cairn --help</code></td>
             <td style="color:rgba(255,255,255,0.7);">Show all available commands</td>
           </tr>
           <tr style="border-color: rgba(255,255,255,0.08);">
-            <td><code style="background:rgba(255,255,255,0.1); color:#4ade80; border-color:rgba(255,255,255,0.15);">cairn validate &lt;spec.yaml&gt;</code></td>
+            <td><code style="background:rgba(255,255,255,0.1); color:#4ade80; border-color:rgba(255,255,255,0.15);">cairn validate &lt;spec.yaml&gt;</code> or <code style="background:rgba(255,255,255,0.1); color:#4ade80; border-color:rgba(255,255,255,0.15);">python -m cairn validate &lt;spec.yaml&gt;</code></td>
             <td style="color:rgba(255,255,255,0.7);">Check spec for errors — always run this first</td>
           </tr>
           <tr style="border-color: rgba(255,255,255,0.08);">
-            <td><code style="background:rgba(255,255,255,0.1); color:#4ade80; border-color:rgba(255,255,255,0.15);">cairn dry-run &lt;spec.yaml&gt;</code></td>
+            <td><code style="background:rgba(255,255,255,0.1); color:#4ade80; border-color:rgba(255,255,255,0.15);">cairn dry-run &lt;spec.yaml&gt;</code> or <code style="background:rgba(255,255,255,0.1); color:#4ade80; border-color:rgba(255,255,255,0.15);">python -m cairn dry-run &lt;spec.yaml&gt;</code></td>
             <td style="color:rgba(255,255,255,0.7);">Simulate full workflow, produce audit records</td>
           </tr>
           <tr style="border-color: rgba(255,255,255,0.08);">
-            <td><code style="background:rgba(255,255,255,0.1); color:#a78bfa; border-color:rgba(255,255,255,0.15);">cairn export-agents &lt;spec.yaml&gt;</code></td>
+            <td><code style="background:rgba(255,255,255,0.1); color:#a78bfa; border-color:rgba(255,255,255,0.15);">cairn export-agents &lt;spec.yaml&gt;</code> or <code style="background:rgba(255,255,255,0.1); color:#a78bfa; border-color:rgba(255,255,255,0.15);">python -m cairn export-agents &lt;spec.yaml&gt;</code></td>
             <td style="color:rgba(255,255,255,0.7);">Generate agent instruction files</td>
           </tr>
           <tr>
-            <td><code style="background:rgba(255,255,255,0.1); color:#a78bfa; border-color:rgba(255,255,255,0.15);">cairn sme-walkthrough</code></td>
+            <td><code style="background:rgba(255,255,255,0.1); color:#a78bfa; border-color:rgba(255,255,255,0.15);">cairn sme-walkthrough</code> or <code style="background:rgba(255,255,255,0.1); color:#a78bfa; border-color:rgba(255,255,255,0.15);">python -m cairn sme-walkthrough</code></td>
             <td style="color:rgba(255,255,255,0.7);">Open expert knowledge capture tool in browser</td>
           </tr>
         </tbody>
