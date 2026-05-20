@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cairn — Interactive User Guide (Epics 1–6)</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #232736;
+    --border: #2e3248;
+    --accent: #6c8ef5;
+    --accent2: #a78bfa;
+    --green: #34d399;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --orange: #fb923c;
+    --text: #e2e8f0;
+    --muted: #8892b0;
+    --code-bg: #161b2e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 15px; line-height: 1.7; }
+
+  /* Layout */
+  .shell { display: flex; min-height: 100vh; }
+  .sidebar { width: 260px; background: var(--surface); border-right: 1px solid var(--border); position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; }
+  .main { flex: 1; padding: 40px 48px; max-width: 960px; }
+
+  /* Sidebar */
+  .sidebar-header { padding: 24px 20px 16px; border-bottom: 1px solid var(--border); }
+  .sidebar-logo { font-size: 18px; font-weight: 700; color: var(--accent); letter-spacing: -0.3px; }
+  .sidebar-sub { font-size: 11px; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.8px; }
+  .sidebar-nav { padding: 12px 0; }
+  .nav-section { padding: 6px 20px 2px; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-top: 8px; }
+  .nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 20px; cursor: pointer; font-size: 13px; color: var(--muted); transition: all 0.15s; border-left: 2px solid transparent; }
+  .nav-item:hover { color: var(--text); background: var(--surface2); }
+  .nav-item.active { color: var(--accent); background: rgba(108,142,245,0.08); border-left-color: var(--accent); }
+  .nav-badge { margin-left: auto; font-size: 10px; padding: 1px 6px; border-radius: 10px; background: var(--surface2); color: var(--muted); }
+  .nav-badge.done { background: rgba(52,211,153,0.15); color: var(--green); }
+
+  /* Sections */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Hero */
+  .hero { background: linear-gradient(135deg, #1a1d27 0%, #1e2238 100%); border: 1px solid var(--border); border-radius: 12px; padding: 40px; margin-bottom: 40px; }
+  .hero-tag { display: inline-block; font-size: 11px; color: var(--accent); background: rgba(108,142,245,0.12); border: 1px solid rgba(108,142,245,0.25); border-radius: 6px; padding: 3px 10px; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.8px; }
+  .hero h1 { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.2; margin-bottom: 16px; background: linear-gradient(135deg, #e2e8f0, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero p { color: var(--muted); font-size: 15px; max-width: 600px; line-height: 1.8; }
+
+  /* Epic cards on overview */
+  .epic-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 32px 0; }
+  .epic-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
+  .epic-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+  .epic-card.e1::before { background: var(--accent); }
+  .epic-card.e2::before { background: var(--green); }
+  .epic-card.e3::before { background: var(--accent2); }
+  .epic-card.e4::before { background: var(--yellow); }
+  .epic-card.e5::before { background: var(--orange); }
+  .epic-card.e6::before { background: var(--red); }
+  .epic-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+  .epic-num { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .epic-card h3 { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+  .epic-card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .epic-frs { margin-top: 10px; display: flex; gap: 4px; flex-wrap: wrap; }
+  .fr-chip { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: var(--surface2); color: var(--muted); }
+
+  /* Section header */
+  .section-header { margin-bottom: 32px; }
+  .section-header .tag { display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 6px; margin-bottom: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
+  .tag-blue { background: rgba(108,142,245,0.15); color: var(--accent); border: 1px solid rgba(108,142,245,0.3); }
+  .tag-green { background: rgba(52,211,153,0.1); color: var(--green); border: 1px solid rgba(52,211,153,0.25); }
+  .tag-purple { background: rgba(167,139,250,0.1); color: var(--accent2); border: 1px solid rgba(167,139,250,0.25); }
+  .tag-yellow { background: rgba(251,191,36,0.1); color: var(--yellow); border: 1px solid rgba(251,191,36,0.25); }
+  .tag-orange { background: rgba(251,146,60,0.1); color: var(--orange); border: 1px solid rgba(251,146,60,0.25); }
+  .tag-red { background: rgba(248,113,113,0.1); color: var(--red); border: 1px solid rgba(248,113,113,0.25); }
+  .section-header h2 { font-size: 26px; font-weight: 800; letter-spacing: -0.4px; color: var(--text); margin-bottom: 8px; }
+  .section-header p { color: var(--muted); font-size: 15px; max-width: 640px; }
+
+  /* Steps */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+  .step { display: flex; gap: 24px; position: relative; }
+  .step:not(:last-child)::after { content: ''; position: absolute; left: 19px; top: 44px; bottom: -8px; width: 2px; background: var(--border); }
+  .step-num { width: 40px; height: 40px; border-radius: 50%; background: var(--surface2); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--accent); flex-shrink: 0; position: relative; z-index: 1; }
+  .step-body { flex: 1; padding-bottom: 32px; }
+  .step-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 4px; line-height: 40px; }
+  .step-desc { font-size: 14px; color: var(--muted); margin-bottom: 16px; }
+
+  /* Code blocks */
+  .code-block { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin: 16px 0; }
+  .code-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; background: var(--surface2); border-bottom: 1px solid var(--border); }
+  .code-lang { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
+  .code-copy { font-size: 11px; color: var(--muted); cursor: pointer; padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border); background: transparent; color: var(--muted); transition: all 0.15s; }
+  .code-copy:hover { color: var(--text); border-color: var(--accent); }
+  .code-block pre { padding: 16px; overflow-x: auto; font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; font-size: 13px; line-height: 1.6; }
+  .code-block pre .kw { color: #c792ea; }
+  .code-block pre .str { color: #c3e88d; }
+  .code-block pre .cm { color: #546e7a; font-style: italic; }
+  .code-block pre .num { color: #f78c6c; }
+  .code-block pre .fn { color: #82aaff; }
+  .code-block pre .op { color: #89ddff; }
+  .code-block pre .var { color: var(--text); }
+  .code-block pre .hl { background: rgba(108,142,245,0.12); display: block; margin: 0 -16px; padding: 0 16px; }
+
+  /* Callouts */
+  .callout { border-radius: 8px; padding: 14px 18px; margin: 16px 0; border-left: 3px solid; font-size: 14px; }
+  .callout-info { background: rgba(108,142,245,0.07); border-color: var(--accent); }
+  .callout-info .callout-title { color: var(--accent); }
+  .callout-warn { background: rgba(251,191,36,0.07); border-color: var(--yellow); }
+  .callout-warn .callout-title { color: var(--yellow); }
+  .callout-success { background: rgba(52,211,153,0.07); border-color: var(--green); }
+  .callout-success .callout-title { color: var(--green); }
+  .callout-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+  .callout p { color: var(--muted); line-height: 1.7; }
+
+  /* Scenario boxes */
+  .scenario { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 24px; margin: 24px 0; }
+  .scenario-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .persona-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .scenario h4 { font-size: 14px; font-weight: 700; color: var(--text); }
+  .scenario .role { font-size: 12px; color: var(--muted); }
+  .scenario-body { font-size: 14px; color: var(--muted); line-height: 1.8; }
+  .scenario-body strong { color: var(--text); }
+
+  /* Outcome list */
+  .outcome-list { list-style: none; margin: 16px 0; }
+  .outcome-list li { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; font-size: 14px; color: var(--muted); }
+  .outcome-list li::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+  .outcome-list li.fail::before { content: '✗'; color: var(--red); }
+  .outcome-list li.warn::before { content: '⚠'; color: var(--yellow); }
+
+  /* Terminal output */
+  .terminal { background: #0d0f1a; border: 1px solid var(--border); border-radius: 8px; padding: 16px; font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: 13px; line-height: 1.7; margin: 16px 0; }
+  .terminal .prompt { color: var(--green); }
+  .terminal .cmd { color: var(--text); }
+  .terminal .out { color: var(--muted); }
+  .terminal .out-pass { color: var(--green); }
+  .terminal .out-fail { color: var(--red); }
+  .terminal .out-stage { color: var(--accent); }
+  .terminal .out-gate { color: var(--accent2); }
+
+  /* Story accordion */
+  .story-list { display: flex; flex-direction: column; gap: 8px; margin: 24px 0; }
+  .story-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .story-toggle { display: flex; align-items: center; gap: 12px; padding: 14px 18px; cursor: pointer; user-select: none; }
+  .story-toggle:hover { background: var(--surface2); }
+  .story-id { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+  .story-toggle h4 { font-size: 14px; font-weight: 600; color: var(--text); flex: 1; }
+  .story-arrow { color: var(--muted); font-size: 12px; transition: transform 0.2s; }
+  .story-body { display: none; padding: 0 18px 18px; border-top: 1px solid var(--border); }
+  .story-body.open { display: block; }
+  .story-arrow.open { transform: rotate(90deg); }
+  .ac-field { font-size: 13px; color: var(--muted); margin: 10px 0 0; }
+  .ac-field strong { color: var(--text); }
+
+  /* Pills row */
+  .pills { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
+  .pill { font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border); color: var(--muted); }
+  .pill-blue { border-color: rgba(108,142,245,0.4); color: var(--accent); background: rgba(108,142,245,0.08); }
+  .pill-green { border-color: rgba(52,211,153,0.4); color: var(--green); background: rgba(52,211,153,0.08); }
+  .pill-yellow { border-color: rgba(251,191,36,0.4); color: var(--yellow); background: rgba(251,191,36,0.08); }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+  th { text-align: left; padding: 10px 14px; background: var(--surface2); color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 14px; border-bottom: 1px solid rgba(46,50,72,0.5); color: var(--muted); vertical-align: top; }
+  td strong { color: var(--text); }
+  tr:hover td { background: rgba(255,255,255,0.01); }
+
+  /* Progress bar */
+  .progress-bar { height: 4px; background: var(--border); border-radius: 2px; margin: 16px 0; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
+
+  /* Divider */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  /* Responsive */
+  @media (max-width: 800px) {
+    .epic-grid { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: 24px 20px; }
+  }
+
+  /* Glue interface diagram */
+  .glue-diagram { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 24px; margin: 24px 0; }
+  .glue-fn { display: flex; align-items: flex-start; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .glue-fn:last-child { border-bottom: none; }
+  .fn-name { font-family: monospace; font-size: 13px; color: var(--accent); font-weight: 700; min-width: 180px; }
+  .fn-desc { font-size: 13px; color: var(--muted); }
+  .fn-ret { font-family: monospace; font-size: 11px; color: var(--green); white-space: nowrap; margin-left: auto; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">⛰ Cairn</div>
+    <div class="sidebar-sub">Interactive User Guide</div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section">Start here</div>
+    <div class="nav-item active" onclick="showSection('overview')">
+      <span>🗺</span> Overview
+    </div>
+
+    <div class="nav-section">Epics 1–6</div>
+    <div class="nav-item" onclick="showSection('epic1')">
+      <span>📦</span> Epic 1 — Install & Validate
+      <span class="nav-badge">5 stories</span>
+    </div>
+    <div class="nav-item" onclick="showSection('epic2')">
+      <span>▶</span> Epic 2 — Dry-Run & Audit
+      <span class="nav-badge">4 stories</span>
+    </div>
+    <div class="nav-item" onclick="showSection('epic3')">
+      <span>🧭</span> Epic 3 — Discovery
+      <span class="nav-badge">5 stories</span>
+    </div>
+    <div class="nav-item" onclick="showSection('epic4')">
+      <span>✍</span> Epic 4 — Spec Authoring
+      <span class="nav-badge">6 stories</span>
+    </div>
+    <div class="nav-item" onclick="showSection('epic5')">
+      <span>🔒</span> Epic 5 — SME Capture
+      <span class="nav-badge">4 stories</span>
+    </div>
+    <div class="nav-item" onclick="showSection('epic6')">
+      <span>🔌</span> Epic 6 — Adapter Interface
+      <span class="nav-badge">4 stories</span>
+    </div>
+
+    <div class="nav-section">Reference</div>
+    <div class="nav-item" onclick="showSection('cheatsheet')">
+      <span>⚡</span> Command Cheatsheet
+    </div>
+    <div class="nav-item" onclick="showSection('personas')">
+      <span>👥</span> User Journeys
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+<!-- ============================================================ OVERVIEW -->
+<div id="overview" class="section active">
+  <div class="hero">
+    <div class="hero-tag">Cairn — Context Stack Methodology</div>
+    <h1>Design governance before you choose a runtime</h1>
+    <p>Cairn is a design-time framework for multi-agent systems. You define what the workflow produces, where humans decide, and what domain knowledge can't be automated — before picking a model or orchestrator. This guide walks you through Epics 1–6 with real examples, CLI commands, and interactive scenarios.</p>
+  </div>
+
+  <h3 style="color:var(--text); margin-bottom:16px; font-size:14px; text-transform:uppercase; letter-spacing:1px; color:var(--muted);">What you'll learn in this guide</h3>
+  <div class="epic-grid">
+    <div class="epic-card e1" onclick="showSection('epic1')">
+      <div class="epic-num">Epic 1</div>
+      <h3>Install &amp; Validate</h3>
+      <p>pip install cairn, run cairn validate, get zero-false-pass guarantees with Phase 1 + Phase 2 checks.</p>
+      <div class="epic-frs">
+        <span class="fr-chip">FR15</span><span class="fr-chip">FR16</span><span class="fr-chip">FR17</span><span class="fr-chip">FR35</span>
+      </div>
+    </div>
+    <div class="epic-card e2" onclick="showSection('epic2')">
+      <div class="epic-num">Epic 2</div>
+      <h3>Dry-Run &amp; Audit Records</h3>
+      <p>Simulate spec execution with no runtime. Every gate produces a machine-readable record auditors can reconstruct.</p>
+      <div class="epic-frs">
+        <span class="fr-chip">FR18</span><span class="fr-chip">FR19</span><span class="fr-chip">FR27</span><span class="fr-chip">FR28</span>
+      </div>
+    </div>
+    <div class="epic-card e3" onclick="showSection('epic3')">
+      <div class="epic-num">Epic 3</div>
+      <h3>Consultant-Led Discovery</h3>
+      <p>Talk to the Cairn Consultant. Answer three questions. Get a stakeholder-readable Context Design Document.</p>
+      <div class="epic-frs">
+        <span class="fr-chip">FR1</span><span class="fr-chip">FR2</span><span class="fr-chip">FR3</span><span class="fr-chip">FR4</span>
+      </div>
+    </div>
+    <div class="epic-card e4" onclick="showSection('epic4')">
+      <div class="epic-num">Epic 4</div>
+      <h3>Spec Authoring &amp; Compilation</h3>
+      <p>Start from a template or compile from a Context Design Doc. Define stages, gates, SME packs, evidence binding.</p>
+      <div class="epic-frs">
+        <span class="fr-chip">FR8</span><span class="fr-chip">FR10</span><span class="fr-chip">FR11</span><span class="fr-chip">FR14</span>
+      </div>
+    </div>
+    <div class="epic-card e5" onclick="showSection('epic5')">
+      <div class="epic-num">Epic 5</div>
+      <h3>SME Knowledge Capture</h3>
+      <p>Domain experts open a local browser tool, answer structured questions, export audit-quality evidence — zero PII transmitted.</p>
+      <div class="epic-frs">
+        <span class="fr-chip">FR23</span><span class="fr-chip">FR24</span><span class="fr-chip">FR25</span><span class="fr-chip">FR26</span>
+      </div>
+    </div>
+    <div class="epic-card e6" onclick="showSection('epic6')">
+      <div class="epic-num">Epic 6</div>
+      <h3>Runtime Adapter Interface</h3>
+      <p>Implement six functions. Run the conformance checklist. Any conformant adapter executes any valid spec unmodified.</p>
+      <div class="epic-frs">
+        <span class="fr-chip">FR31</span><span class="fr-chip">FR32</span><span class="fr-chip">FR33</span><span class="fr-chip">FR34</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <h3 style="color:var(--text); margin-bottom:16px;">The Three-Question Adoption Path</h3>
+  <p style="color:var(--muted); margin-bottom:24px; font-size:14px;">Every Cairn adoption starts with three questions. You never hand-write YAML. The Consultant leads the conversation; <code style="background:var(--surface2); padding:2px 6px; border-radius:4px; font-size:12px;">cairn-compile</code> produces the spec.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">What decision does the workflow produce?</div>
+        <div class="step-desc">Not "what does the AI do" — what is the output the whole workflow is accountable for? A loan decision. A clinical note. An incident resolution. Name it precisely.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">Where must a human decide with actual judgment?</div>
+        <div class="step-desc">These become gates — typed contracts with PASS/FAIL/ESCALATE outcomes, a named human owner, and an explicit checklist. Not a checkbox. A contract.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">What knowledge lives only in domain experts?</div>
+        <div class="step-desc">These become SME Input Packs — a typed schema object capturing named answerer, role, evidence citations, confidence rating, and sign-off. First-class auditable artifacts.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ EPIC 1 -->
+<div id="epic1" class="section">
+  <div class="section-header">
+    <span class="tag tag-blue">Epic 1 — 5 Stories</span>
+    <h2>Installable Toolkit &amp; Spec Validation</h2>
+    <p>A developer can <code style="font-size:13px; background:var(--surface2); padding:2px 6px; border-radius:4px;">pip install cairn</code>, run <code style="font-size:13px; background:var(--surface2); padding:2px 6px; border-radius:4px;">cairn validate</code>, and get precise pass/fail feedback — the foundation of the zero-false-passes guarantee.</p>
+  </div>
+
+  <div class="scenario">
+    <div class="scenario-header">
+      <div class="persona-avatar" style="background:rgba(108,142,245,0.15);">👩‍💻</div>
+      <div><h4>Priya — Senior Engineer, Fintech</h4><div class="role">Building her company's first production multi-agent loan decisioning system</div></div>
+    </div>
+    <div class="scenario-body">
+      Her CTO asked: <strong>"If the model makes a wrong call, can you show me exactly why, and who approved it?"</strong> She needs a validation layer before any runtime work begins. She starts here — installing the toolkit and validating her first spec.
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- STEP-BY-STEP -->
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">Story 1.1 — Install the Cairn toolkit</div>
+        <div class="step-desc">Install into a Python 3.10+ virtual environment. The package brings only stdlib + Click + PyYAML + jsonschema — no procurement-friction dependencies.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><span class="cm"># Create a fresh virtual environment</span>
+<span class="fn">python</span> -m venv .venv
+<span class="fn">source</span> .venv/bin/activate    <span class="cm"># Windows: .venv\Scripts\activate</span>
+
+<span class="cm"># Install Cairn</span>
+<span class="fn">pip</span> install cairn
+
+<span class="cm"># Verify — should list all subcommands</span>
+<span class="fn">cairn</span> <span class="op">--help</span></pre>
+        </div>
+        <div class="terminal">
+          <div><span class="prompt">$</span> <span class="cmd">cairn --help</span></div>
+          <div class="out">Usage: cairn [OPTIONS] COMMAND [ARGS]...</div>
+          <div class="out">&nbsp;</div>
+          <div class="out">  Cairn — Context Stack Toolkit</div>
+          <div class="out">&nbsp;</div>
+          <div class="out">Commands:</div>
+          <div class="out">  validate        Validate a context spec (schema + graph)</div>
+          <div class="out">  dry-run         Execute a spec with the mock adapter</div>
+          <div class="out">  export-agents   Generate agent files from a spec</div>
+          <div class="out">  sme-walkthrough Open the SME knowledge capture tool</div>
+        </div>
+        <div class="callout callout-info">
+          <div class="callout-title">Pre-launch repo requirements</div>
+          <p>When you inspect the repository root you'll find SECURITY.md (security contact), NOTICE (Apache-2.0 attribution), and CONTRIBUTING.md (yaml.safe_load rule documented). These are pre-launch requirements, not afterthoughts.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">Story 1.2 — YAML Safety Lint (CI enforced)</div>
+        <div class="step-desc">The CI pipeline blocks any <code>yaml.load()</code> call without SafeLoader — preventing arbitrary code execution from spec files. This runs on every push via <code>lint.yml</code>.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">yaml — .github/workflows/lint.yml</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><span class="kw">name</span><span class="op">:</span> lint
+<span class="kw">on</span><span class="op">:</span> [push, pull_request]
+<span class="kw">jobs</span><span class="op">:</span>
+  <span class="kw">yaml-safety</span><span class="op">:</span>
+    <span class="kw">runs-on</span><span class="op">:</span> ubuntu-latest
+    <span class="kw">steps</span><span class="op">:</span>
+      <span class="op">-</span> <span class="kw">uses</span><span class="op">:</span> actions/checkout@v4
+      <span class="op">-</span> <span class="kw">name</span><span class="op">:</span> Check yaml.safe_load usage
+        <span class="kw">run</span><span class="op">: |</span>
+          <span class="cm"># Fail if yaml.load() is called without SafeLoader</span>
+          grep -rn "yaml\.load(" cairn/ \
+            | grep -v "SafeLoader" \
+            | grep -v ".pyc" \
+            && echo "ERROR: unsafe yaml.load() found" && exit 1 \
+            || echo "OK: all YAML loading uses safe_load"</pre>
+        </div>
+        <div class="callout callout-warn">
+          <div class="callout-title">Why this matters</div>
+          <p>A spec file containing <code>!!python/object/apply:os.system ['rm -rf /']</code> can execute arbitrary code via <code>yaml.load()</code>. The lint gate makes this structurally impossible — not just a code-review convention.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">Story 1.3 — Schema Validation (Phase 1)</div>
+        <div class="step-desc">Phase 1 checks the spec against the JSON Schema. The <code>apiVersion</code> gate runs first — an unknown version stops everything before any schema work begins.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><span class="cm"># Validate the change-management example (ships with the repo)</span>
+<span class="fn">cairn</span> validate examples/change-management/context-spec.yaml
+
+<span class="cm"># Expected output — exits 0</span>
+<span class="cm"># (nothing printed to stderr = clean pass)</span>
+
+<span class="cm"># Try a spec with a broken apiVersion</span>
+<span class="fn">cairn</span> validate broken-version.yaml</pre>
+        </div>
+        <div class="terminal">
+          <div><span class="prompt">$</span> <span class="cmd">cairn validate broken-version.yaml</span></div>
+          <div class="out-fail">Error [Schema]: Unknown apiVersion 'cairn/v2'. Supported: cairn/v1alpha</div>
+          <div><span class="prompt">$</span> <span class="cmd">echo $?</span></div>
+          <div class="out-fail">1</div>
+        </div>
+        <div class="terminal">
+          <div><span class="prompt">$</span> <span class="cmd">cairn validate missing-field.yaml</span></div>
+          <div class="out-fail">Error [Schema]: 'stage_id' is a required property at stages[0]</div>
+          <div class="out-fail">Error [Schema]: 'outcomes' is a required property at gates[1]</div>
+          <div><span class="prompt">$</span> <span class="cmd">echo $?</span></div>
+          <div class="out-fail">1</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">Story 1.4 — Graph/Wiring Validation (Phase 2)</div>
+        <div class="step-desc">Phase 2 only runs if Phase 1 passes zero errors. It checks that all stage references, gate owners, and evidence bindings are internally consistent — not just syntactically valid.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">context-spec.yaml — broken graph reference</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><span class="kw">apiVersion</span><span class="op">:</span> cairn/v1alpha
+<span class="kw">spec_id</span><span class="op">:</span> <span class="str">loan-decisioning-v1</span>
+<span class="kw">stages</span><span class="op">:</span>
+  <span class="op">-</span> <span class="kw">stage_id</span><span class="op">:</span> <span class="str">risk-scoring</span>
+    <span class="kw">mission</span><span class="op">:</span> <span class="str">Score the applicant's credit risk</span>
+    <span class="kw">hard_rules</span><span class="op">:</span>
+      <span class="op">-</span> <span class="str">Never approve applications above DTI threshold without gate review</span>
+    <span class="cm"># This references a gate that doesn't exist!</span>
+    <span class="kw">gate</span><span class="op">:</span> <span class="str">credit-officer-review</span>  <span class="cm"># typo: should be officer-review</span></pre>
+        </div>
+        <div class="terminal">
+          <div><span class="prompt">$</span> <span class="cmd">cairn validate loan-spec.yaml</span></div>
+          <div class="out-fail">Error [Graph]: Stage 'risk-scoring' references gate 'credit-officer-review' which does not exist</div>
+          <div class="out-fail">  at stages[0].gate</div>
+          <div class="out-fail">  Available gates: officer-review, compliance-check</div>
+        </div>
+        <div class="callout callout-success">
+          <div class="callout-title">Zero false passes guarantee</div>
+          <p>A spec that exits 0 from <code>cairn validate</code> is guaranteed to be both structurally valid (Phase 1) AND graph-correct (Phase 2). False confidence is harder to recover from than a false negative.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <div class="step-title">Story 1.5 — Pre-Launch Package Compliance</div>
+        <div class="step-desc">Enterprise adoption requires: a machine-readable SBOM (CycloneDX JSON), a reachable security contact (SECURITY.md), and correct Apache-2.0 attribution (NOTICE).</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">bash — generate SBOM before release</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><span class="cm"># Generate CycloneDX SBOM as part of release prep</span>
+<span class="fn">pip</span> install cyclonedx-bom
+<span class="fn">cyclonedx-py</span> environment --format json -o cairn-sbom.json
+
+<span class="cm"># Build the release wheel</span>
+<span class="fn">hatch</span> build
+
+<span class="cm"># Publish to PyPI (manual — no automated tag trigger for MVP)</span>
+<span class="fn">hatch</span> publish</pre>
+        </div>
+
+        <table>
+          <thead><tr><th>File</th><th>Purpose</th><th>Required Before</th></tr></thead>
+          <tbody>
+            <tr><td><strong>SECURITY.md</strong></td><td>Responsible disclosure contact</td><td>Any public release</td></tr>
+            <tr><td><strong>NOTICE</strong></td><td>Apache-2.0 attribution for contributors</td><td>Any public release</td></tr>
+            <tr><td><strong>CONTRIBUTING.md</strong></td><td>yaml.safe_load rule + contribution guide</td><td>Any public release</td></tr>
+            <tr><td><strong>cairn-sbom.json</strong></td><td>CycloneDX machine-readable dependency list</td><td>Enterprise procurement</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Story accordion -->
+  <hr class="divider">
+  <h3 style="color:var(--text); margin-bottom:16px;">All Epic 1 Stories</h3>
+  <div class="story-list">
+    <div class="story-item">
+      <div class="story-toggle" onclick="toggleStory(this)">
+        <span class="story-id pill-blue" style="background:rgba(108,142,245,0.1); color:var(--accent); padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700;">1.1</span>
+        <h4>Project Packaging &amp; Installable CLI</h4>
+        <span class="story-arrow">▶</span>
+      </div>
+      <div class="story-body">
+        <div class="ac-field"><strong>Given</strong> a fresh Python 3.10+ venv <strong>When</strong> I run <code>pip install cairn</code> <strong>Then</strong> it installs without errors and <code>cairn --help</code> shows all subcommands.</div>
+        <div class="ac-field"><strong>And</strong> SECURITY.md, NOTICE, CONTRIBUTING.md are all present and populated at repo root.</div>
+      </div>
+    </div>
+    <div class="story-item">
+      <div class="story-toggle" onclick="toggleStory(this)">
+        <span class="story-id pill-blue" style="background:rgba(108,142,245,0.1); color:var(--accent); padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700;">1.2</span>
+        <h4>YAML Safety Lint Enforcement</h4>
+        <span class="story-arrow">▶</span>
+      </div>
+      <div class="story-body">
+        <div class="ac-field"><strong>Given</strong> a CI push with <code>yaml.load(data)</code> anywhere in <code>cairn/</code> <strong>When</strong> lint.yml runs <strong>Then</strong> the job fails with the offending file and line number.</div>
+        <div class="ac-field"><strong>Given</strong> all YAML uses <code>yaml.safe_load()</code> <strong>Then</strong> lint passes.</div>
+      </div>
+    </div>
+    <div class="story-item">
+      <div class="story-toggle" onclick="toggleStory(this)">
+        <span class="story-id pill-blue" style="background:rgba(108,142,245,0.1); color:var(--accent); padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700;">1.3</span>
+        <h4>Schema Validation — Phase 1</h4>
+        <span class="story-arrow">▶</span>
+      </div>
+      <div class="story-body">
+        <div class="ac-field"><strong>Given</strong> a well-formed spec <strong>Then</strong> exits 0, nothing to stderr, completes in ≤5 seconds.</div>
+        <div class="ac-field"><strong>Given</strong> a structural error <strong>Then</strong> exits 1 and prints <code>Error [Schema]: &lt;message&gt; at &lt;dot-notation-path&gt;</code>.</div>
+        <div class="ac-field"><strong>Given</strong> an unknown <code>apiVersion</code> <strong>Then</strong> exits 1 immediately with <code>Error [Schema]: Unknown apiVersion 'X'...</code> before any further validation.</div>
+      </div>
+    </div>
+    <div class="story-item">
+      <div class="story-toggle" onclick="toggleStory(this)">
+        <span class="story-id pill-blue" style="background:rgba(108,142,245,0.1); color:var(--accent); padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700;">1.4</span>
+        <h4>Graph/Wiring Validation — Phase 2</h4>
+        <span class="story-arrow">▶</span>
+      </div>
+      <div class="story-body">
+        <div class="ac-field"><strong>Given</strong> a Phase 1 failure <strong>Then</strong> Phase 2 does NOT run — output contains only Schema-phase errors.</div>
+        <div class="ac-field"><strong>Given</strong> a broken stage→gate reference <strong>Then</strong> exits 1 with <code>Error [Graph]: ...</code> at the exact dot-notation path.</div>
+        <div class="ac-field"><strong>Given</strong> the existing change-management example <strong>Then</strong> exits 0.</div>
+      </div>
+    </div>
+    <div class="story-item">
+      <div class="story-toggle" onclick="toggleStory(this)">
+        <span class="story-id pill-blue" style="background:rgba(108,142,245,0.1); color:var(--accent); padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700;">1.5</span>
+        <h4>Pre-Launch Package Compliance (SBOM + Security Contact)</h4>
+        <span class="story-arrow">▶</span>
+      </div>
+      <div class="story-body">
+        <div class="ac-field"><strong>Given</strong> a release prepared with <code>hatch publish</code> <strong>Then</strong> a CycloneDX JSON SBOM is generated and included as a release artifact.</div>
+        <div class="ac-field"><strong>Given</strong> SECURITY.md <strong>Then</strong> it contains a clear, reachable responsible disclosure contact.</div>
+        <div class="ac-field"><strong>Given</strong> pyproject.toml <strong>Then</strong> it declares Apache-2.0 license and the NOTICE file contains attribution.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ EPIC 2 -->
+<div id="epic2" class="section">
+  <div class="section-header">
+    <span class="tag tag-green">Epic 2 — 4 Stories</span>
+    <h2>Spec Execution, Dry-Run &amp; Governance Records</h2>
+    <p>A developer can dry-run any valid spec end-to-end with the mock adapter — no real model or runtime required — producing machine-readable gate records sufficient for regulatory audit reconstruction.</p>
+  </div>
+
+  <div class="scenario">
+    <div class="scenario-header">
+      <div class="persona-avatar" style="background:rgba(52,211,153,0.15);">⚖️</div>
+      <div><h4>Fatima — Compliance Officer</h4><div class="role">Reconstructing a loan decision from six months ago for a regulator</div></div>
+    </div>
+    <div class="scenario-body">
+      A loan decision is being challenged. Fatima opens the context spec and the gate record directory. She sees: <strong>decision=PASS, timestamp, gate owner (named human role), checklist items all checked, SME pack with named credit analyst, evidence links, confidence rating.</strong> She compiles a three-page summary without involving a single developer. Challenge resolved in two days.
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">Story 2.1 — Run a dry-run</div>
+        <div class="step-desc">The mock adapter executes every stage and gate in the spec deterministically — no model, no runtime. The stdout format is fixed and machine-parseable.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><span class="fn">cairn</span> dry-run examples/change-management/context-spec.yaml</pre>
+        </div>
+        <div class="terminal">
+          <div><span class="prompt">$</span> <span class="cmd">cairn dry-run examples/change-management/context-spec.yaml</span></div>
+          <div class="out-stage">[STAGE] intake-assessment  → running</div>
+          <div class="out-stage">[STAGE] intake-assessment  → done</div>
+          <div class="out-stage">[STAGE] impact-analysis    → running</div>
+          <div class="out-stage">[STAGE] impact-analysis    → done</div>
+          <div class="out-gate">[GATE]  change-board-review → PASS (owner: change-manager)</div>
+          <div class="out-stage">[STAGE] implementation     → running</div>
+          <div class="out-stage">[STAGE] implementation     → done</div>
+          <div class="out-gate">[GATE]  post-impl-verify   → PASS (owner: release-lead)</div>
+          <div class="out-pass">Run complete. Gate records written to ./cairn-run-a3f7c291/</div>
+        </div>
+        <div class="callout callout-info">
+          <div class="callout-title">Determinism guarantee</div>
+          <p>Run the same spec twice — you get the same stage sequence and gate outcomes. The <code>run_id</code> changes (uuid4), but the logic is identical. This is a hard requirement, not a default behavior.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">Story 2.2 — Gate Record Persistence</div>
+        <div class="step-desc">Every gate evaluation writes a JSON file to <code>./cairn-run-&lt;run_id&gt;/</code>. The 8-field schema is fixed and machine-readable — designed for audit reconstruction without developer involvement.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">json — cairn-run-a3f7c291/change-board-review.json</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre>{
+  <span class="str">"spec_id"</span><span class="op">:</span>        <span class="str">"change-management-v1"</span>,
+  <span class="str">"run_id"</span><span class="op">:</span>         <span class="str">"a3f7c291-8d2e-4f1a-b3c6-9e7d0f2a4b85"</span>,
+  <span class="str">"gate_id"</span><span class="op">:</span>        <span class="str">"change-board-review"</span>,
+  <span class="str">"decision"</span><span class="op">:</span>       <span class="str">"PASS"</span>,
+  <span class="str">"gate_owner"</span><span class="op">:</span>    <span class="str">"change-manager"</span>,
+  <span class="str">"checklist_items"</span><span class="op">:</span> [
+    { <span class="str">"item"</span><span class="op">:</span> <span class="str">"Impact assessment reviewed"</span>, <span class="str">"checked"</span><span class="op">:</span> <span class="kw">true</span> },
+    { <span class="str">"item"</span><span class="op">:</span> <span class="str">"Rollback plan confirmed"</span>, <span class="str">"checked"</span><span class="op">:</span> <span class="kw">true</span> },
+    { <span class="str">"item"</span><span class="op">:</span> <span class="str">"Stakeholder sign-offs collected"</span>, <span class="str">"checked"</span><span class="op">:</span> <span class="kw">true</span> }
+  ],
+  <span class="str">"timestamp"</span><span class="op">:</span>     <span class="str">"2026-05-20T14:23:07Z"</span>,
+  <span class="str">"spec_version"</span><span class="op">:</span>  <span class="str">"cairn/v1alpha"</span>
+}</pre>
+        </div>
+
+        <table>
+          <thead><tr><th>Field</th><th>Type</th><th>Audit use</th></tr></thead>
+          <tbody>
+            <tr><td><strong>spec_id</strong></td><td>string</td><td>Links record to the spec that generated it</td></tr>
+            <tr><td><strong>run_id</strong></td><td>uuid4</td><td>Unique per execution; groups all gates from one run</td></tr>
+            <tr><td><strong>gate_id</strong></td><td>string</td><td>Which gate evaluated</td></tr>
+            <tr><td><strong>decision</strong></td><td>PASS | FAIL | ESCALATE</td><td>The human decision outcome — not a model prediction</td></tr>
+            <tr><td><strong>gate_owner</strong></td><td>string</td><td>Named human role who made the decision</td></tr>
+            <tr><td><strong>checklist_items</strong></td><td>array</td><td>Every criterion evaluated, with checked status</td></tr>
+            <tr><td><strong>timestamp</strong></td><td>ISO 8601</td><td>When the decision was recorded</td></tr>
+            <tr><td><strong>spec_version</strong></td><td>string</td><td>Schema version that governed this run</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">Story 2.3 — Agent Export</div>
+        <div class="step-desc">Generate self-contained, operable agent files from your spec — one per stage. The agent's mission and hard rules come directly from the spec.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><span class="fn">cairn</span> export-agents examples/change-management/context-spec.yaml
+
+<span class="cm"># Generates:</span>
+<span class="cm">#   agents/intake-assessment.json</span>
+<span class="cm">#   agents/impact-analysis.json</span>
+<span class="cm">#   agents/implementation.json</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">Story 2.4 — CI Validation &amp; Dry-Run Matrix</div>
+        <div class="step-desc">Every spec in <code>examples/</code> and <code>domains/</code> is validated and dry-run on every push. New specs are auto-discovered — no workflow change needed.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">yaml — .github/workflows/ci.yml</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><span class="kw">name</span><span class="op">:</span> ci
+<span class="kw">on</span><span class="op">:</span> [push, pull_request]
+<span class="kw">jobs</span><span class="op">:</span>
+  <span class="kw">validate-matrix</span><span class="op">:</span>
+    <span class="kw">runs-on</span><span class="op">:</span> ubuntu-latest
+    <span class="kw">steps</span><span class="op">:</span>
+      <span class="op">-</span> <span class="kw">uses</span><span class="op">:</span> actions/checkout@v4
+      <span class="op">-</span> <span class="kw">name</span><span class="op">:</span> Install cairn
+        <span class="kw">run</span><span class="op">:</span> pip install cairn
+      <span class="op">-</span> <span class="kw">name</span><span class="op">:</span> Validate and dry-run all specs
+        <span class="kw">run</span><span class="op">: |</span>
+          <span class="kw">for</span> spec in $(find examples/ domains/ -name "context-spec.yaml"); <span class="kw">do</span>
+            echo "--- $spec ---"
+            cairn validate "$spec" || exit 1
+            cairn dry-run "$spec" || exit 1
+          <span class="kw">done</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ EPIC 3 -->
+<div id="epic3" class="section">
+  <div class="section-header">
+    <span class="tag tag-purple">Epic 3 — 5 Stories</span>
+    <h2>Consultant-Led Discovery</h2>
+    <p>A developer runs the Cairn Consultant to produce a stakeholder-readable Context Design Document for any workflow — greenfield or brownfield. Explicit <code>[GAP]</code> markers surface undefined decision points. Multi-stakeholder sessions supported.</p>
+  </div>
+
+  <div class="scenario">
+    <div class="scenario-header">
+      <div class="persona-avatar" style="background:rgba(167,139,250,0.15);">🏗️</div>
+      <div><h4>Omar — 3 months into building an underwriting system on CrewAI</h4><div class="role">Compliance team just asked for a process walkthrough — and the "process" is six Python files</div></div>
+    </div>
+    <div class="scenario-body">
+      Omar runs the Consultant. The discovery questions surface a gap he hadn't named: <strong>there's a stage where an underwriter is supposed to review the risk score, but the system just logs it and moves on.</strong> The gate was never designed — it was assumed. The Consultant flags it as <code>[GAP: human decision point undefined]</code>. Omar retrofits the gate. His compliance team reads the Context Design Document — no YAML, just prose — and for the first time understands what the system actually does.
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">Story 3.1 — Activate the Cairn Consultant Persona</div>
+        <div class="step-desc">Run the <code>cairn-consultant</code> skill in Claude Code. The Consultant introduces itself, explains it will ask three questions, and does NOT ask about models, runtimes, or orchestrators.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Claude Code — how to invoke</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><span class="cm"># In Claude Code, type the skill name or use the menu</span>
+/cairn-consultant
+
+<span class="cm"># Or ask Claude directly:</span>
+<span class="cm"># "I want to run the Cairn Consultant to design my workflow"</span></pre>
+        </div>
+        <div class="terminal">
+          <div class="out"><strong style="color:var(--accent2)">Cairn Consultant →</strong> Hello. I'm the Cairn Consultant. My job is to</div>
+          <div class="out">  help you define the governance contract for your agentic workflow</div>
+          <div class="out">  through three questions — before we touch any code or schema.</div>
+          <div class="out">&nbsp;</div>
+          <div class="out">  I won't ask about models, runtimes, or orchestrators. Those come</div>
+          <div class="out">  later. Let's start with what matters: what decision does your</div>
+          <div class="out">  workflow produce?</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">Story 3.2 — Greenfield Discovery (no prior docs)</div>
+        <div class="step-desc">The Consultant explores all three core questions. For a greenfield workflow with no prior documentation, this typically takes 15–20 minutes and produces a prose document — not YAML.</div>
+        <div class="terminal">
+          <div class="out"><strong style="color:var(--accent2)">Consultant →</strong> What decision does the workflow produce?</div>
+          <div class="out"><strong style="color:var(--text)">You →</strong> A loan approval or rejection with a risk score and reasoning.</div>
+          <div class="out">&nbsp;</div>
+          <div class="out"><strong style="color:var(--accent2)">Consultant →</strong> Good. Where must a human decide — with actual judgment,</div>
+          <div class="out">  not just review — before the workflow advances?</div>
+          <div class="out"><strong style="color:var(--text)">You →</strong> A credit officer has to approve anything above 40% DTI.</div>
+          <div class="out">&nbsp;</div>
+          <div class="out"><strong style="color:var(--accent2)">Consultant →</strong> What knowledge lives only in your domain experts and cannot</div>
+          <div class="out">  be captured in training data or rules?</div>
+          <div class="out"><strong style="color:var(--text)">You →</strong> Edge cases in commercial real estate collateral — our senior</div>
+          <div class="out">  underwriter Sarah knows things that aren't in any dataset.</div>
+        </div>
+        <div class="callout callout-success">
+          <div class="callout-title">Output: Context Design Document</div>
+          <p>The Consultant produces a prose-first, stakeholder-readable document. No YAML. No schema references. A document a CTO or compliance officer can read, annotate, and sign off on.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">Story 3.3 — GAP Surfacing for Undefined Decision Points</div>
+        <div class="step-desc">When a human decision point is identified but not fully defined, the Consultant marks it explicitly. Governance gaps are visible before compilation — not discovered at audit time.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Context Design Document excerpt (with GAPs)</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre>## Decision Gates
+
+**Gate: DTI Threshold Review**
+Owner: Senior Credit Officer
+Outcomes: PASS, FAIL, ESCALATE
+Checklist:
+  - DTI ratio calculated and verified
+  - Comparable loan history reviewed
+  - Collateral assessed at current market rate
+
+**Gate: Commercial Collateral Valuation**
+[GAP: human decision point undefined]
+Context: The workflow currently logs the collateral value and
+proceeds. No human review point has been designed. Per Omar's
+description, an underwriter is assumed to review this — but
+the review step is not implemented. This gate must be defined
+before compilation.</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">Story 3.4 — Brownfield Workflow Discovery</div>
+        <div class="step-desc">For existing systems, the Consultant asks targeted questions to surface implicit decision points that may not be explicitly designed. Governance assumptions become visible.</div>
+        <div class="callout callout-warn">
+          <div class="callout-title">The brownfield problem</div>
+          <p>Most existing multi-agent systems have governance assumptions baked into prompts, buried in code, or scattered across Notion docs. The Consultant's targeted questions surface the gap between "what the system does" and "what a governed system would require." See <code>docs/brownfield-adoption.md</code> for the full step-by-step path.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <div class="step-title">Story 3.5 — Multi-Stakeholder Discovery Facilitation</div>
+        <div class="step-desc">The Consultant can run a session with multiple stakeholders simultaneously — technical, compliance, and domain teams. Conflicts between stakeholder answers are surfaced explicitly, not silently resolved.</div>
+        <div class="scenario">
+          <div class="scenario-header">
+            <div class="persona-avatar" style="background:rgba(167,139,250,0.15);">🏥</div>
+            <div><h4>Danielle — Platform Architect, Hospital System</h4><div class="role">Facilitating a clinical documentation AI design session with 3 departments</div></div>
+          </div>
+          <div class="scenario-body">
+            Clinical, compliance, and IT teams each have opinions about where physicians must sign off. The Consultant forces agreement by asking each stakeholder perspective before finalizing each answer. In two hours: a Context Design Document <strong>all three departments agreed to</strong> — because it was produced from their answers, not handed to them. Key decisions are attributed: <em>"per compliance: ..."</em>, <em>"per domain expert: ..."</em>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ EPIC 4 -->
+<div id="epic4" class="section">
+  <div class="section-header">
+    <span class="tag tag-yellow">Epic 4 — 6 Stories</span>
+    <h2>Spec Authoring &amp; Compilation</h2>
+    <p>A developer compiles a Context Design Document into a validated <code>context-spec.yaml</code>. The full spec primitive set: stages, gates, SME input packs, evidence binding, and <code>apiVersion</code>.</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">Story 4.1 — Start from the Starter Template</div>
+        <div class="step-desc">Copy the blank template — it has all required top-level fields with placeholder values and inline comments. Running validate on the unedited template fails only on placeholder values, not structure.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">templates/starter/context-spec.yaml</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><span class="kw">apiVersion</span><span class="op">:</span> <span class="str">cairn/v1alpha</span>
+<span class="kw">spec_id</span><span class="op">:</span>    <span class="str">your-workflow-name-v1</span>  <span class="cm"># unique ID — kebab-case</span>
+
+<span class="kw">stages</span><span class="op">:</span>
+  <span class="op">-</span> <span class="kw">stage_id</span><span class="op">:</span>  <span class="str">PLACEHOLDER</span>         <span class="cm"># required: unique stage ID</span>
+    <span class="kw">mission</span><span class="op">:</span>   <span class="str">PLACEHOLDER</span>         <span class="cm"># what this agent does</span>
+    <span class="kw">hard_rules</span><span class="op">:</span>
+      <span class="op">-</span> <span class="str">PLACEHOLDER</span>             <span class="cm"># constraints this agent must never violate</span>
+
+<span class="kw">gates</span><span class="op">:</span>
+  <span class="op">-</span> <span class="kw">gate_id</span><span class="op">:</span>   <span class="str">PLACEHOLDER</span>         <span class="cm"># referenced from stage.gate</span>
+    <span class="kw">owner</span><span class="op">:</span>     <span class="str">PLACEHOLDER</span>         <span class="cm"># named human role</span>
+    <span class="kw">outcomes</span><span class="op">:</span>  [PASS, FAIL, ESCALATE]
+    <span class="kw">checklist</span><span class="op">:</span>
+      <span class="op">-</span> <span class="str">PLACEHOLDER</span>             <span class="cm"># explicit criteria the owner evaluates</span>
+
+<span class="kw">sme_packs</span><span class="op">:</span>
+  <span class="op">-</span> <span class="kw">pack_id</span><span class="op">:</span>          <span class="str">PLACEHOLDER</span>
+    <span class="kw">answerer</span><span class="op">:</span>         <span class="str">PLACEHOLDER</span>  <span class="cm"># named human (not a role — a person)</span>
+    <span class="kw">role</span><span class="op">:</span>             <span class="str">PLACEHOLDER</span>
+    <span class="kw">evidence</span><span class="op">:</span>         []          <span class="cm"># citation links to source artifacts</span>
+    <span class="kw">confidence_rating</span><span class="op">:</span> <span class="num">0.0</span>        <span class="cm"># 0.0–1.0</span>
+    <span class="kw">sign_off</span><span class="op">:</span>         <span class="str">false</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">Stories 4.2, 4.3, 4.4, 4.5 — Full Spec Primitive Set</div>
+        <div class="step-desc">A complete spec with all four primitives — stages, gates, SME packs, and evidence binding — for the loan decisioning example.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">context-spec.yaml — loan decisioning (complete example)</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><span class="kw">apiVersion</span><span class="op">:</span> <span class="str">cairn/v1alpha</span>
+<span class="kw">spec_id</span><span class="op">:</span>    <span class="str">loan-decisioning-v1</span>
+
+<span class="kw">stages</span><span class="op">:</span>
+  <span class="op">-</span> <span class="kw">stage_id</span><span class="op">:</span> <span class="str">risk-scoring</span>
+    <span class="kw">mission</span><span class="op">:</span>   <span class="str">Score the applicant's credit risk using bureau data</span>
+    <span class="kw">hard_rules</span><span class="op">:</span>
+      <span class="op">-</span> <span class="str">Never approve applications above 43% DTI without gate review</span>
+      <span class="op">-</span> <span class="str">Always cite the bureau report section as evidence for the score</span>
+    <span class="kw">gate</span><span class="op">:</span> <span class="str">officer-review</span>
+    <span class="kw">evidence_bindings</span><span class="op">:</span>
+      <span class="op">-</span> <span class="kw">claim</span><span class="op">:</span>  <span class="str">risk_score</span>
+        <span class="kw">source</span><span class="op">:</span> <span class="str">bureau-report.credit_score_section</span>
+
+  <span class="op">-</span> <span class="kw">stage_id</span><span class="op">:</span> <span class="str">collateral-assessment</span>
+    <span class="kw">mission</span><span class="op">:</span>   <span class="str">Assess commercial real estate collateral value</span>
+    <span class="kw">hard_rules</span><span class="op">:</span>
+      <span class="op">-</span> <span class="str">SME sign-off required before any collateral value is used downstream</span>
+    <span class="kw">sme_input</span><span class="op">:</span> <span class="str">senior-underwriter-pack</span>
+
+<span class="kw">gates</span><span class="op">:</span>
+  <span class="op">-</span> <span class="kw">gate_id</span><span class="op">:</span> <span class="str">officer-review</span>
+    <span class="kw">owner</span><span class="op">:</span>    <span class="str">senior-credit-officer</span>
+    <span class="kw">outcomes</span><span class="op">:</span> [PASS, FAIL, ESCALATE]
+    <span class="kw">checklist</span><span class="op">:</span>
+      <span class="op">-</span> <span class="str">Risk score reviewed and bureau data confirmed</span>
+      <span class="op">-</span> <span class="str">DTI ratio independently verified</span>
+      <span class="op">-</span> <span class="str">Collateral SME pack signed off</span>
+      <span class="op">-</span> <span class="str">Comparable loan history reviewed</span>
+
+<span class="kw">sme_packs</span><span class="op">:</span>
+  <span class="op">-</span> <span class="kw">pack_id</span><span class="op">:</span>           <span class="str">senior-underwriter-pack</span>
+    <span class="kw">answerer</span><span class="op">:</span>          <span class="str">Sarah Chen</span>          <span class="cm"># named person, not a role</span>
+    <span class="kw">role</span><span class="op">:</span>              <span class="str">Senior Underwriter</span>
+    <span class="kw">evidence</span><span class="op">:</span>
+      <span class="op">-</span> <span class="str">appraisal-report-2026-05-15.pdf#section-3</span>
+      <span class="op">-</span> <span class="str">comparable-sales-comps.xlsx#tab-commercial</span>
+    <span class="kw">confidence_rating</span><span class="op">:</span>  <span class="num">0.87</span>
+    <span class="kw">sign_off</span><span class="op">:</span>           <span class="kw">true</span></pre>
+        </div>
+
+        <div class="pills">
+          <span class="pill pill-blue">stages — agent missions + hard rules</span>
+          <span class="pill pill-green">gates — PASS/FAIL/ESCALATE + named owner + checklist</span>
+          <span class="pill pill-yellow">sme_packs — named person + evidence + confidence + sign-off</span>
+          <span class="pill" style="border-color:rgba(167,139,250,0.4); color:var(--accent2);">evidence_bindings — every claim cites an upstream source</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">Story 4.6 — Compile from a Context Design Document</div>
+        <div class="step-desc">If you used the Consultant (Epic 3), run <code>cairn-compile</code> in Claude Code. It reads the Context Design Document and produces a valid, immediately-validatable spec. GAPs halt compilation.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Claude Code — how to invoke</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><span class="cm"># After running cairn-discovery and getting the Context Design Doc:</span>
+/cairn-compile
+
+<span class="cm"># The skill reads the Context Design Document from this session</span>
+<span class="cm"># and produces context-spec.yaml in the working directory.</span>
+
+<span class="cm"># If there are unresolved [GAP] markers:</span>
+<span class="cm"># → Compilation halts and tells you which gaps need resolution first</span></pre>
+        </div>
+        <div class="terminal">
+          <div class="out"><strong style="color:var(--accent2)">cairn-compile →</strong> Reading Context Design Document...</div>
+          <div class="out">  Found 2 stages, 1 gate, 1 SME pack.</div>
+          <div class="out-fail">  ✗ Found 1 unresolved [GAP]: "commercial-collateral-review"</div>
+          <div class="out-fail">    Compilation halted. Resolve all gaps before generating spec.</div>
+          <div class="out">  Tip: Return to cairn-discovery to define the gate owner and checklist.</div>
+        </div>
+        <div class="terminal">
+          <div class="out"><strong style="color:var(--accent2)">cairn-compile →</strong> (after gap resolved)</div>
+          <div class="out-pass">  ✓ context-spec.yaml written to ./context-spec.yaml</div>
+          <div class="out-pass">  ✓ cairn validate ./context-spec.yaml → exit 0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ EPIC 5 -->
+<div id="epic5" class="section">
+  <div class="section-header">
+    <span class="tag tag-orange">Epic 5 — 4 Stories</span>
+    <h2>SME Knowledge Capture</h2>
+    <p>A domain expert opens the SME walkthrough tool in a local browser — no installation — completes all SME pack fields, and produces an audit-quality evidence artifact with no PII transmitted externally.</p>
+  </div>
+
+  <div class="scenario">
+    <div class="scenario-header">
+      <div class="persona-avatar" style="background:rgba(251,146,60,0.15);">🧪</div>
+      <div><h4>Sarah Chen — Senior Underwriter</h4><div class="role">Commercial real estate domain expert whose knowledge can't be automated</div></div>
+    </div>
+    <div class="scenario-body">
+      Sarah isn't a developer. She doesn't know what YAML is. The developer runs <code>cairn sme-walkthrough</code>, which opens a browser tool on her machine. She loads the spec, sees a form asking for her assessment of the collateral, links to the appraisal report, rates her confidence, and clicks sign-off. The data is stored locally in her browser. She exports a JSON file that becomes the audit artifact. <strong>Zero network requests. Zero PII transmitted.</strong>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">Story 5.1 — Launch the SME Tool</div>
+        <div class="step-desc">One command opens the tool in the system's default browser as a <code>file://</code> URL. No web server. No installation required for the domain expert.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><span class="cm"># Developer runs this once — opens in default browser</span>
+<span class="fn">cairn</span> sme-walkthrough
+
+<span class="cm"># Opens: file:///path/to/venv/lib/python3.10/site-packages/cairn/data/sme_tool/index.html</span>
+<span class="cm"># Tool files are shipped as package data — no hardcoded paths</span></pre>
+        </div>
+        <div class="callout callout-info">
+          <div class="callout-title">Technical implementation</div>
+          <p>The tool ships as package data under <code>cairn/data/sme_tool/</code> — three files: <code>index.html</code>, <code>sme.js</code>, <code>sme.css</code>. The command uses <code>importlib.resources</code> to locate them and <code>webbrowser.open()</code> to launch. Pure vanilla HTML/JS — no CDN-loaded framework, works as a <code>file://</code> URL. Loads in ≤3 seconds.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">Story 5.2 — Load Spec &amp; Guided Walkthrough</div>
+        <div class="step-desc">The expert loads a <code>context-spec.yaml</code> file into the tool. Each SME pack becomes a guided form. Required fields are enforced before submission.</div>
+
+        <table>
+          <thead><tr><th>Form field</th><th>Type</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Answerer name</strong></td><td>Text input</td><td>Sarah Chen</td></tr>
+            <tr><td><strong>Role</strong></td><td>Text input</td><td>Senior Underwriter</td></tr>
+            <tr><td><strong>Evidence citations</strong></td><td>URL/path array</td><td>appraisal-report.pdf#section-3</td></tr>
+            <tr><td><strong>Confidence rating</strong></td><td>Slider 0–100%</td><td>87%</td></tr>
+            <tr><td><strong>Sign-off</strong></td><td>Checkbox</td><td>☑ I confirm this assessment</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">Story 5.3 — Local-Only Storage &amp; Export</div>
+        <div class="step-desc">Data is stored under a <code>localStorage</code> key. Export downloads a JSON artifact. Zero network requests at any point during the session.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">json — exported SME pack artifact</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre>{
+  <span class="str">"packId"</span><span class="op">:</span>      <span class="str">"senior-underwriter-pack"</span>,
+  <span class="str">"answerer"</span><span class="op">:</span>    <span class="str">"Sarah Chen"</span>,
+  <span class="str">"role"</span><span class="op">:</span>        <span class="str">"Senior Underwriter"</span>,
+  <span class="str">"evidence"</span><span class="op">:</span>    [<span class="str">"appraisal-report-2026-05-15.pdf#section-3"</span>],
+  <span class="str">"confidence"</span><span class="op">:</span>  <span class="num">0.87</span>,
+  <span class="str">"signoff"</span><span class="op">:</span>     <span class="kw">true</span>,
+  <span class="str">"timestamp"</span><span class="op">:</span>   <span class="str">"2026-05-20T16:42:00Z"</span>,
+  <span class="str">"specVersion"</span><span class="op">:</span> <span class="str">"cairn/v1alpha"</span>
+}</pre>
+        </div>
+        <div class="callout callout-success">
+          <div class="callout-title">localStorage key format</div>
+          <p><code>cairn_sme_&lt;spec_id&gt;</code> — one key per spec. Single read/write per session. The exported JSON validates against the SME pack schema and can be attached directly to an audit record.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">Story 5.4 — WCAG 2.1 AA Accessibility</div>
+        <div class="step-desc">The SME tool meets WCAG 2.1 Level AA — domain experts and compliance officers may have accessibility requirements.</div>
+        <ul class="outcome-list">
+          <li>All form controls have associated labels</li>
+          <li>Focus indicators are visible at all times</li>
+          <li>Color contrast ratios meet AA minimums</li>
+          <li>All interactive elements reachable by keyboard-only navigation</li>
+          <li>Field labels, error messages, and confirmation states announced by screen readers</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ EPIC 6 -->
+<div id="epic6" class="section">
+  <div class="section-header">
+    <span class="tag tag-red">Epic 6 — 4 Stories</span>
+    <h2>Runtime Adapter Interface &amp; Portability</h2>
+    <p>An adapter engineer implements the six-function glue interface to run Cairn specs on any runtime, and verifies against the published conformance checklist. Portability becomes mechanically verifiable.</p>
+  </div>
+
+  <div class="scenario">
+    <div class="scenario-header">
+      <div class="persona-avatar" style="background:rgba(248,113,113,0.15);">🔌</div>
+      <div><h4>Chen — Developer Advocate, LangGraph consultancy</h4><div class="role">Building the first real LangGraph adapter for Cairn specs</div></div>
+    </div>
+    <div class="scenario-body">
+      Chen reads <code>spec/glue-interface.md</code>. Six functions. Clear contracts. No ambiguity. He implements all six against LangGraph's state machine API. Runs the change-management example end-to-end. Runs the conformance checklist — all items pass. Opens a PR to <code>adapters/langgraph/</code>. A week later, someone he's never met stars the repo and opens a follow-up issue asking for CrewAI support.
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">Story 6.1 — The Glue Interface Specification</div>
+        <div class="step-desc">Six functions. One result shape. No runtime-specific references. Stable from v1alpha to v1.</div>
+
+        <div class="glue-diagram">
+          <div class="glue-fn">
+            <div class="fn-name">load_spec(path)</div>
+            <div class="fn-desc">Load and pre-validate a context-spec.yaml file. Calls spec_loader.py for apiVersion check before any execution.</div>
+            <div class="fn-ret">→ {success, error, data: spec}</div>
+          </div>
+          <div class="glue-fn">
+            <div class="fn-name">run_stage(spec, stage_id)</div>
+            <div class="fn-desc">Execute a single stage in the spec. The adapter invokes the agent for that stage_id with its mission and hard rules.</div>
+            <div class="fn-ret">→ {success, error, data: output}</div>
+          </div>
+          <div class="glue-fn">
+            <div class="fn-name">evaluate_gate(spec, gate_id)</div>
+            <div class="fn-desc">Evaluate a gate and return a decision (PASS/FAIL/ESCALATE). Must produce a gate record with all 8 required fields.</div>
+            <div class="fn-ret">→ {success, error, data: gate_record}</div>
+          </div>
+          <div class="glue-fn">
+            <div class="fn-name">collect_sme_input(spec, pack_id)</div>
+            <div class="fn-desc">Collect SME pack answers for the named pack. May prompt a human or load from the local SME tool export.</div>
+            <div class="fn-ret">→ {success, error, data: sme_pack}</div>
+          </div>
+          <div class="glue-fn">
+            <div class="fn-name">log_artifact(spec, artifact)</div>
+            <div class="fn-desc">Log a workflow artifact with its evidence binding. Every artifact claim must cite a traceable upstream source.</div>
+            <div class="fn-ret">→ {success, error, data: log_entry}</div>
+          </div>
+          <div class="glue-fn">
+            <div class="fn-name">handle_escalation(spec, gate_id)</div>
+            <div class="fn-desc">Handle an ESCALATE outcome from a gate. The spec defines escalation targets — the adapter routes accordingly.</div>
+            <div class="fn-ret">→ {success, error, data: escalation_record}</div>
+          </div>
+        </div>
+
+        <div class="callout callout-info">
+          <div class="callout-title">One result shape for all six functions</div>
+          <p>Every function returns <code>{"success": bool, "error": str|None, "data": &lt;typed&gt;|None}</code>. No other shapes. No exceptions propagated to adapters. This makes adapter implementations predictable and the conformance checklist mechanical.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">Story 6.2 — Mock Adapter as Reference Implementation</div>
+        <div class="step-desc">The mock adapter ships with Cairn and is the reference conformant implementation. Every adapter engineer starts here — read the mock, understand the contracts, implement for their runtime.</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">python — adapters/mock/adapter.py (structure)</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><span class="kw">from</span> cairn.spec_loader <span class="kw">import</span> load_spec_safe
+
+<span class="kw">def</span> <span class="fn">load_spec</span>(path: str) -> dict:
+    spec = load_spec_safe(path)  <span class="cm"># handles apiVersion check</span>
+    <span class="kw">return</span> {<span class="str">"success"</span>: <span class="kw">True</span>, <span class="str">"error"</span>: <span class="kw">None</span>, <span class="str">"data"</span>: spec}
+
+<span class="kw">def</span> <span class="fn">run_stage</span>(spec: dict, stage_id: str) -> dict:
+    stage = _find_stage(spec, stage_id)
+    <span class="cm"># Mock: print progress, return success — no real model call</span>
+    print(f<span class="str">"[STAGE] {stage_id:<16} → running"</span>)
+    print(f<span class="str">"[STAGE] {stage_id:<16} → done"</span>)
+    <span class="kw">return</span> {<span class="str">"success"</span>: <span class="kw">True</span>, <span class="str">"error"</span>: <span class="kw">None</span>, <span class="str">"data"</span>: {<span class="str">"stage_id"</span>: stage_id}}
+
+<span class="kw">def</span> <span class="fn">evaluate_gate</span>(spec: dict, gate_id: str) -> dict:
+    gate = _find_gate(spec, gate_id)
+    record = _build_gate_record(spec, gate, decision=<span class="str">"PASS"</span>)
+    _persist_gate_record(record)
+    print(f<span class="str">"[GATE]  {gate_id:<16} → PASS (owner: {gate['owner']})"</span>)
+    <span class="kw">return</span> {<span class="str">"success"</span>: <span class="kw">True</span>, <span class="str">"error"</span>: <span class="kw">None</span>, <span class="str">"data"</span>: record}
+
+<span class="cm"># ... collect_sme_input, log_artifact, handle_escalation follow same pattern</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">Story 6.3 — Conformance Checklist</div>
+        <div class="step-desc">Self-certify your adapter before submitting a PR. Every item is binary — pass or fail. If any item is unchecked, the PR is not merged.</div>
+        <table>
+          <thead><tr><th>Checklist item</th><th>How to verify</th></tr></thead>
+          <tbody>
+            <tr><td>All six functions implemented</td><td>Grep for each function name in adapter source</td></tr>
+            <tr><td>Every function returns <code>{success, error, data}</code></td><td>Run unit tests; check no other return shapes exist</td></tr>
+            <tr><td><code>load_spec</code> calls <code>spec_loader.py</code> (or equivalent apiVersion check)</td><td>Trace load path; apiVersion check must run before execution</td></tr>
+            <tr><td>No spec modifications during execution</td><td>Spec object is not mutated by any function</td></tr>
+            <tr><td>Gate records produced with all 8 required fields</td><td>Validate gate records against <code>spec/gate-record.schema.json</code></td></tr>
+            <tr><td>No <code>yaml.load()</code> without SafeLoader in adapter source</td><td>Run the same grep check as CI lint.yml</td></tr>
+            <tr><td>Change-management example runs end-to-end</td><td><code>cairn dry-run examples/change-management/context-spec.yaml</code> exits 0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">Story 6.4 — Runtime-Agnostic Portability Verification</div>
+        <div class="step-desc">The same <code>context-spec.yaml</code> runs unmodified on the mock adapter and any conformant adapter. Portability is a correctness property — not a compatibility promise.</div>
+        <div class="callout callout-success">
+          <div class="callout-title">The portability claim</div>
+          <p>A spec that passes <code>cairn validate</code> and runs on the mock adapter must run unmodified on any conformant adapter. The stage sequence and gate evaluation outcomes must be identical. This is verified, not assumed — and the conformance checklist is the mechanical proof.</p>
+        </div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">bash — portability verification</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><span class="cm"># Step 1: validate the spec</span>
+<span class="fn">cairn</span> validate my-workflow.yaml
+
+<span class="cm"># Step 2: dry-run with mock adapter</span>
+<span class="fn">cairn</span> dry-run my-workflow.yaml
+
+<span class="cm"># Step 3: run with a real conformant adapter (e.g., LangGraph)</span>
+<span class="cm"># Same spec — no modifications required</span>
+<span class="fn">python</span> -m adapters.langgraph.runner my-workflow.yaml
+
+<span class="cm"># Both runs should produce identical stage sequences and gate outcomes</span>
+<span class="cm"># Only run_id will differ between the two runs</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================ CHEATSHEET -->
+<div id="cheatsheet" class="section">
+  <div class="section-header">
+    <span class="tag tag-blue">Quick Reference</span>
+    <h2>Command Cheatsheet</h2>
+    <p>Every CLI command, skill invocation, and key spec field in one place.</p>
+  </div>
+
+  <h3 style="color:var(--text); margin: 24px 0 12px; font-size:15px;">CLI Commands</h3>
+  <table>
+    <thead><tr><th>Command</th><th>What it does</th><th>Exit codes</th></tr></thead>
+    <tbody>
+      <tr><td><code>cairn --help</code></td><td>Show all subcommands</td><td>0 always</td></tr>
+      <tr><td><code>cairn validate &lt;spec.yaml&gt;</code></td><td>Phase 1 (schema) + Phase 2 (graph). Zero false passes.</td><td>0 = clean, 1 = errors</td></tr>
+      <tr><td><code>cairn dry-run &lt;spec.yaml&gt;</code></td><td>Execute spec with mock adapter. Produces gate records in <code>./cairn-run-&lt;id&gt;/</code></td><td>0 = success, 1 = invalid spec</td></tr>
+      <tr><td><code>cairn export-agents &lt;spec.yaml&gt;</code></td><td>Generate one agent file per stage</td><td>0 = success, 1 = invalid spec</td></tr>
+      <tr><td><code>cairn sme-walkthrough</code></td><td>Open SME tool in default browser as <code>file://</code> URL</td><td>0 always</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:var(--text); margin: 24px 0 12px; font-size:15px;">Claude Code Skills</h3>
+  <table>
+    <thead><tr><th>Skill</th><th>What it does</th><th>When to use</th></tr></thead>
+    <tbody>
+      <tr><td><code>/cairn-consultant</code></td><td>Activates the Consultant persona</td><td>First entry point for any new workflow design</td></tr>
+      <tr><td><code>/cairn-discovery</code></td><td>Runs the full three-question discovery conversation</td><td>After activating the Consultant</td></tr>
+      <tr><td><code>/cairn-compile</code></td><td>Compiles Context Design Document → context-spec.yaml</td><td>After discovery is complete with zero [GAP] markers</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:var(--text); margin: 24px 0 12px; font-size:15px;">Error Message Formats</h3>
+  <table>
+    <thead><tr><th>Prefix</th><th>Source</th><th>When it appears</th></tr></thead>
+    <tbody>
+      <tr><td><code>Error [Schema]:</code></td><td>Phase 1 — JSON Schema</td><td>Structural issues, missing required fields, bad apiVersion</td></tr>
+      <tr><td><code>Error [Graph]:</code></td><td>Phase 2 — graph/wiring</td><td>Broken stage→gate refs, orphaned nodes, broken evidence bindings</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:var(--text); margin: 24px 0 12px; font-size:15px;">Key Files &amp; Locations</h3>
+  <table>
+    <thead><tr><th>File / Path</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>examples/change-management/context-spec.yaml</code></td><td>Reference example — always validates and dry-runs clean</td></tr>
+      <tr><td><code>templates/starter/context-spec.yaml</code></td><td>Blank template — copy and fill in</td></tr>
+      <tr><td><code>spec/context-spec.schema.json</code></td><td>JSON Schema Draft 7 — self-contained, no external refs</td></tr>
+      <tr><td><code>spec/gate-record.schema.json</code></td><td>8-field gate record schema</td></tr>
+      <tr><td><code>spec/glue-interface.md</code></td><td>Six-function adapter interface specification</td></tr>
+      <tr><td><code>cairn/data/sme_tool/index.html</code></td><td>SME walkthrough tool (ships as package data)</td></tr>
+      <tr><td><code>adapters/mock/adapter.py</code></td><td>Reference conformant adapter implementation</td></tr>
+      <tr><td><code>cairn-run-&lt;run_id&gt;/</code></td><td>Gate records from a dry-run (created in working directory)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ============================================================ PERSONAS -->
+<div id="personas" class="section">
+  <div class="section-header">
+    <span class="tag tag-purple">User Journeys</span>
+    <h2>Five Personas — Which Are You?</h2>
+    <p>Cairn is designed for five distinct roles, each entering the system at a different point and needing different epics.</p>
+  </div>
+
+  <div class="scenario">
+    <div class="scenario-header">
+      <div class="persona-avatar" style="background:rgba(108,142,245,0.15);">👩‍💻</div>
+      <div><h4>The Builder — First Governed System</h4><div class="role">Priya, Senior Engineer, Fintech</div></div>
+    </div>
+    <div class="scenario-body">
+      Building her first production multi-agent system. Needs governance from day one. Her path: <strong>Epic 3</strong> (run the Consultant → get a Context Design Doc) → <strong>Epic 4</strong> (compile to spec) → <strong>Epic 1</strong> (install and validate) → <strong>Epic 2</strong> (dry-run). ≤15 minutes from start to a validated spec.
+    </div>
+    <div class="pills" style="margin-top:16px;">
+      <span class="pill pill-purple" style="border-color:rgba(167,139,250,0.4); color:var(--accent2);">Start: Epic 3</span>
+      <span class="pill">→ Epic 4</span><span class="pill">→ Epic 1</span><span class="pill">→ Epic 2</span>
+    </div>
+  </div>
+
+  <div class="scenario">
+    <div class="scenario-header">
+      <div class="persona-avatar" style="background:rgba(251,191,36,0.15);">😬</div>
+      <div><h4>The Builder — Brownfield Regret</h4><div class="role">Omar, 3 months into CrewAI underwriting system</div></div>
+    </div>
+    <div class="scenario-body">
+      Existing system, compliance pressure, no documentation. His path: <strong>Epic 3</strong> (brownfield discovery → surface [GAP] markers) → <strong>Epic 4</strong> (retrofit gates and SME packs → compile) → <strong>Epic 1</strong> (validate). See <code>docs/brownfield-adoption.md</code>.
+    </div>
+    <div class="pills" style="margin-top:16px;">
+      <span class="pill pill-purple" style="border-color:rgba(167,139,250,0.4); color:var(--accent2);">Start: Epic 3 (brownfield)</span>
+      <span class="pill">→ Epic 4</span><span class="pill">→ Epic 1</span>
+    </div>
+  </div>
+
+  <div class="scenario">
+    <div class="scenario-header">
+      <div class="persona-avatar" style="background:rgba(167,139,250,0.15);">🏥</div>
+      <div><h4>The Consultant Practitioner</h4><div class="role">Danielle, Platform Architect, Hospital System</div></div>
+    </div>
+    <div class="scenario-body">
+      Facilitating a multi-stakeholder discovery session across clinical, compliance, and IT. Needs the Context Design Document as an alignment artifact all parties can agree on. Her path: <strong>Epic 3</strong> (multi-stakeholder discovery) → <strong>Epic 5</strong> (SME packs for named domain experts) → <strong>Epic 4</strong> (compile + validate).
+    </div>
+    <div class="pills" style="margin-top:16px;">
+      <span class="pill pill-purple" style="border-color:rgba(167,139,250,0.4); color:var(--accent2);">Start: Epic 3 (multi-stakeholder)</span>
+      <span class="pill">→ Epic 5</span><span class="pill">→ Epic 4</span>
+    </div>
+  </div>
+
+  <div class="scenario">
+    <div class="scenario-header">
+      <div class="persona-avatar" style="background:rgba(248,113,113,0.15);">🔌</div>
+      <div><h4>The Adapter Engineer</h4><div class="role">Chen, Developer Advocate, LangGraph consultancy</div></div>
+    </div>
+    <div class="scenario-body">
+      Building a real adapter so his client can run Cairn specs on LangGraph. He doesn't need the Consultant at all. His path: <strong>Epic 6</strong> (read the glue interface spec → implement six functions → run conformance checklist → open PR).
+    </div>
+    <div class="pills" style="margin-top:16px;">
+      <span class="pill" style="border-color:rgba(248,113,113,0.4); color:var(--red);">Start: Epic 6</span>
+      <span class="pill">+ Epic 1 (install to test)</span>
+      <span class="pill">+ Epic 2 (run dry-run to verify)</span>
+    </div>
+  </div>
+
+  <div class="scenario">
+    <div class="scenario-header">
+      <div class="persona-avatar" style="background:rgba(52,211,153,0.15);">⚖️</div>
+      <div><h4>The Auditor</h4><div class="role">Fatima, Compliance Officer, Regulated Financial Institution</div></div>
+    </div>
+    <div class="scenario-body">
+      A loan decision from six months ago is being challenged. She doesn't run any CLI commands. She opens the context spec and the gate record directory — both plain text files. In two days she produces a three-page regulatory summary with no developer involvement. Her artifacts: gate records (Epic 2), SME pack exports (Epic 5).
+    </div>
+    <div class="pills" style="margin-top:16px;">
+      <span class="pill pill-green">Consumes: Epic 2 gate records</span>
+      <span class="pill pill-green">Consumes: Epic 5 SME pack exports</span>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const items = document.querySelectorAll('.nav-item');
+  items.forEach(item => {
+    if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(id)) {
+      item.classList.add('active');
+    }
+  });
+  window.scrollTo(0, 0);
+}
+
+function toggleStory(header) {
+  const body = header.nextElementSibling;
+  const arrow = header.querySelector('.story-arrow');
+  body.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+// Epic card click routing
+document.querySelectorAll('.epic-card').forEach(card => {
+  card.style.cursor = 'pointer';
+});
+</script>
+</body>
+</html>

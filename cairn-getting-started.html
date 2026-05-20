@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cairn — Getting Started Guide</title>
+<style>
+  :root {
+    --bg: #f8f9fc;
+    --white: #ffffff;
+    --surface: #f0f2f8;
+    --border: #e2e5f0;
+    --accent: #4f6ef7;
+    --accent-dark: #3451d1;
+    --accent-light: #eef1fe;
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --yellow: #ca8a04;
+    --yellow-light: #fef9c3;
+    --red: #dc2626;
+    --red-light: #fee2e2;
+    --purple: #7c3aed;
+    --purple-light: #ede9fe;
+    --orange: #ea580c;
+    --orange-light: #ffedd5;
+    --text: #1e2133;
+    --muted: #6b7280;
+    --code-bg: #1e2133;
+    --code-text: #e2e8f0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 15px; line-height: 1.75; }
+
+  /* ── Layout ── */
+  .page { max-width: 820px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  /* ── Progress bar at top ── */
+  .progress-track { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 100; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #a78bfa); width: 0%; transition: width 0.2s; }
+
+  /* ── Nav pills ── */
+  .nav { position: sticky; top: 3px; z-index: 90; background: rgba(248,249,252,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); padding: 10px 0; margin: 0 -24px 48px; padding-left: 24px; padding-right: 24px; display: flex; gap: 6px; overflow-x: auto; }
+  .nav a { text-decoration: none; font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 20px; color: var(--muted); white-space: nowrap; transition: all 0.15s; border: 1px solid transparent; }
+  .nav a:hover { color: var(--accent); border-color: var(--accent); }
+  .nav a.active { color: var(--white); background: var(--accent); }
+
+  /* ── Header ── */
+  .guide-header { text-align: center; margin-bottom: 56px; }
+  .guide-badge { display: inline-block; background: var(--accent-light); color: var(--accent); font-size: 12px; font-weight: 700; padding: 4px 14px; border-radius: 20px; margin-bottom: 20px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .guide-header h1 { font-size: 38px; font-weight: 900; color: var(--text); letter-spacing: -0.8px; line-height: 1.15; margin-bottom: 16px; }
+  .guide-header h1 span { color: var(--accent); }
+  .guide-header p { font-size: 16px; color: var(--muted); max-width: 560px; margin: 0 auto; }
+
+  /* ── Section ── */
+  .section { margin-bottom: 64px; }
+  .section-label { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+  .step-circle { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; flex-shrink: 0; }
+  .step-circle.blue { background: var(--accent); color: white; }
+  .step-circle.green { background: var(--green); color: white; }
+  .step-circle.purple { background: var(--purple); color: white; }
+  .step-circle.orange { background: var(--orange); color: white; }
+  .section-label h2 { font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
+
+  /* ── Cards ── */
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+  .card-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 12px; }
+
+  /* ── Requirement checklist ── */
+  .req-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .req-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; background: var(--surface); font-size: 14px; }
+  .req-item .icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .req-item .label strong { display: block; color: var(--text); font-size: 14px; }
+  .req-item .label span { color: var(--muted); font-size: 12px; }
+  .req-item .badge { margin-left: auto; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+  .badge-required { background: var(--red-light); color: var(--red); }
+  .badge-auto { background: var(--green-light); color: var(--green); }
+
+  /* ── Code blocks ── */
+  .code-wrap { border-radius: 10px; overflow: hidden; margin: 16px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .code-header { background: #2d3355; display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; }
+  .code-dot-row { display: flex; gap: 6px; }
+  .code-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-red { background: #ff5f57; }
+  .dot-yellow { background: #febc2e; }
+  .dot-green { background: #28c840; }
+  .code-lang-label { font-size: 11px; color: rgba(255,255,255,0.5); font-weight: 600; letter-spacing: 0.5px; }
+  .copy-btn { font-size: 11px; padding: 3px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.15s; }
+  .copy-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+  pre { background: var(--code-bg); color: var(--code-text); padding: 20px; overflow-x: auto; font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; font-size: 13px; line-height: 1.65; tab-size: 2; }
+  .kw { color: #c792ea; }
+  .str { color: #c3e88d; }
+  .cm { color: #546e7a; font-style: italic; }
+  .num { color: #f78c6c; }
+  .op { color: #89ddff; }
+  .fn { color: #82aaff; }
+  .pass { color: #4ade80; font-weight: 700; }
+  .stage { color: #60a5fa; }
+  .gate { color: #a78bfa; }
+  .err { color: #f87171; }
+  .hl-line { background: rgba(79,110,247,0.15); display: block; margin: 0 -20px; padding: 0 20px; }
+
+  /* ── Callouts ── */
+  .callout { border-radius: 10px; padding: 14px 18px; margin: 16px 0; display: flex; gap: 12px; align-items: flex-start; }
+  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .callout-body strong { display: block; font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+  .callout-body p { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.6; }
+  .callout-info { background: var(--accent-light); border: 1px solid rgba(79,110,247,0.2); }
+  .callout-info strong { color: var(--accent-dark); }
+  .callout-tip { background: var(--green-light); border: 1px solid rgba(22,163,74,0.2); }
+  .callout-tip strong { color: var(--green); }
+  .callout-warn { background: var(--yellow-light); border: 1px solid rgba(202,138,4,0.2); }
+  .callout-warn strong { color: var(--yellow); }
+
+  /* ── Inline code ── */
+  code { background: var(--surface); padding: 1px 6px; border-radius: 4px; font-size: 13px; font-family: 'Cascadia Code', monospace; color: var(--purple); border: 1px solid var(--border); }
+
+  /* ── Divider ── */
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+  /* ── Diagram ── */
+  .diagram-wrap { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 28px; margin: 24px 0; overflow-x: auto; }
+  .diagram-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 20px; }
+
+  /* ── Flow diagram ── */
+  .flow { display: flex; align-items: center; gap: 0; flex-wrap: nowrap; overflow-x: auto; padding: 4px 0; }
+  .flow-node { background: var(--accent-light); border: 2px solid var(--accent); border-radius: 10px; padding: 10px 14px; text-align: center; flex-shrink: 0; min-width: 110px; }
+  .flow-node.gate-node { background: var(--purple-light); border-color: var(--purple); }
+  .flow-node.end-node { background: var(--green-light); border-color: var(--green); }
+  .flow-node .node-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .flow-node .node-name { font-size: 13px; font-weight: 700; color: var(--text); margin-top: 4px; }
+  .flow-node .node-owner { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .flow-arrow { color: var(--muted); font-size: 20px; padding: 0 6px; flex-shrink: 0; }
+  .flow-arrow.pass { color: var(--green); }
+
+  /* ── Spec anatomy diagram ── */
+  .spec-anatomy { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .spec-block { border-radius: 8px; padding: 14px; }
+  .spec-block h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+  .spec-block ul { list-style: none; }
+  .spec-block ul li { font-size: 12px; color: var(--muted); padding: 2px 0; }
+  .spec-block ul li::before { content: '→ '; color: var(--accent); font-weight: 700; }
+  .sb-blue { background: var(--accent-light); border: 1px solid rgba(79,110,247,0.25); }
+  .sb-blue h4 { color: var(--accent-dark); }
+  .sb-purple { background: var(--purple-light); border: 1px solid rgba(124,58,237,0.25); }
+  .sb-purple h4 { color: var(--purple); }
+  .sb-green { background: var(--green-light); border: 1px solid rgba(22,163,74,0.25); }
+  .sb-green h4 { color: var(--green); }
+  .sb-orange { background: var(--orange-light); border: 1px solid rgba(234,88,12,0.25); }
+  .sb-orange h4 { color: var(--orange); }
+
+  /* ── Result cards ── */
+  .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+  .result-card { border-radius: 8px; padding: 14px; }
+  .result-card h4 { font-size: 12px; font-weight: 700; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.6px; }
+  .result-card p { font-size: 13px; color: var(--muted); }
+  .rc-pass { background: var(--green-light); border: 1px solid rgba(22,163,74,0.25); }
+  .rc-pass h4 { color: var(--green); }
+  .rc-fail { background: var(--red-light); border: 1px solid rgba(220,38,38,0.2); }
+  .rc-fail h4 { color: var(--red); }
+
+  /* ── Gate record visual ── */
+  .gate-record { background: var(--code-bg); border-radius: 10px; overflow: hidden; margin: 16px 0; }
+  .gate-record-header { background: #2d3355; padding: 10px 16px; display: flex; align-items: center; gap: 8px; }
+  .gr-icon { font-size: 14px; }
+  .gr-title { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.8); }
+  .gr-badge { margin-left: auto; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; background: rgba(74,222,128,0.2); color: #4ade80; }
+
+  /* ── Table ── */
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+  th { text-align: left; padding: 10px 14px; background: var(--surface); color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td code { font-size: 12px; }
+
+  /* ── Checklist ── */
+  .checklist { list-style: none; display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+  .checklist li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; }
+  .checklist li .ck { width: 20px; height: 20px; border-radius: 4px; background: var(--green); display: flex; align-items: center; justify-content: center; font-size: 11px; color: white; flex-shrink: 0; margin-top: 2px; }
+  .checklist li span { color: var(--text); line-height: 1.5; }
+
+  /* ── Big number steps ── */
+  .big-steps { display: flex; flex-direction: column; gap: 32px; }
+  .big-step { display: flex; gap: 20px; }
+  .big-step-num { font-size: 48px; font-weight: 900; color: var(--border); flex-shrink: 0; line-height: 1; width: 56px; text-align: center; }
+  .big-step-body { flex: 1; padding-top: 4px; }
+  .big-step-body h3 { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .big-step-body p { font-size: 14px; color: var(--muted); margin-bottom: 12px; }
+
+  /* ── Footer ── */
+  footer { text-align: center; margin-top: 80px; padding: 32px 24px; border-top: 1px solid var(--border); }
+  footer p { font-size: 13px; color: var(--muted); }
+  footer strong { color: var(--text); }
+  .heart { color: #ef4444; font-size: 16px; }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .spec-anatomy { grid-template-columns: 1fr; }
+    .result-grid { grid-template-columns: 1fr; }
+    .guide-header h1 { font-size: 28px; }
+    .flow { padding-bottom: 12px; }
+  }
+
+  /* ── Tabs ── */
+  .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 16px; }
+  .tab { padding: 8px 16px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.15s; }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ── OS selector ── */
+  .os-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+  .os-tab { font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border); cursor: pointer; background: var(--white); color: var(--muted); transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
+  .os-tab.active { background: var(--accent); border-color: var(--accent); color: white; }
+</style>
+</head>
+<body>
+
+<div class="progress-track"><div class="progress-fill" id="progressBar"></div></div>
+
+<div class="page">
+
+  <!-- Nav pills -->
+  <nav class="nav" id="topNav">
+    <a href="#install" class="active">1 · Install</a>
+    <a href="#what-you-get">2 · What You Get</a>
+    <a href="#the-example">3 · Change Management Example</a>
+    <a href="#run-validate">4 · Run: Validate</a>
+    <a href="#run-dryrun">5 · Run: Dry-Run</a>
+    <a href="#understand-output">6 · Understand Output</a>
+    <a href="#next-steps">7 · Next Steps</a>
+  </nav>
+
+  <!-- ── Header ── -->
+  <header class="guide-header">
+    <div class="guide-badge">⛰ Getting Started Guide</div>
+    <h1>Install <span>Cairn</span> and run your<br>first governance workflow</h1>
+    <p>A step-by-step guide for beginners. We'll install the toolkit, learn the basics, and run a real change-management workflow from end to end — in under 15 minutes.</p>
+  </header>
+
+  <!-- ════════════════════════════════════════════════
+       SECTION 1 — INSTALL
+  ═══════════════════════════════════════════════════ -->
+  <section class="section" id="install">
+    <div class="section-label">
+      <div class="step-circle blue">1</div>
+      <h2>Install Cairn</h2>
+    </div>
+
+    <!-- What you need first -->
+    <div class="card">
+      <div class="card-title">Before you begin — you need these</div>
+      <ul class="req-list">
+        <li class="req-item">
+          <div class="icon" style="background:#dbeafe;">🐍</div>
+          <div class="label">
+            <strong>Python 3.10 or newer</strong>
+            <span>Check your version: open a terminal and type <code>python --version</code></span>
+          </div>
+          <span class="badge badge-required">Required</span>
+        </li>
+        <li class="req-item">
+          <div class="icon" style="background:#fce7f3;">📦</div>
+          <div class="label">
+            <strong>pip</strong>
+            <span>Python's package installer — comes with Python automatically</span>
+          </div>
+          <span class="badge badge-auto">Included with Python</span>
+        </li>
+        <li class="req-item">
+          <div class="icon" style="background:#ecfdf5;">💻</div>
+          <div class="label">
+            <strong>A terminal / command prompt</strong>
+            <span>Terminal on Mac/Linux · Command Prompt or PowerShell on Windows</span>
+          </div>
+          <span class="badge badge-required">Required</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="callout callout-warn">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body">
+        <strong>Python version check</strong>
+        <p>Cairn requires Python 3.10 or newer. If <code>python --version</code> shows 3.9 or lower, please upgrade at <strong>python.org</strong> before continuing.</p>
+      </div>
+    </div>
+
+    <!-- Step 1: virtual env -->
+    <div class="card">
+      <div class="card-title">Step 1 of 3 — Create a virtual environment (recommended)</div>
+      <p style="color:var(--muted); font-size:14px; margin-bottom:16px;">A virtual environment keeps Cairn's files separate from the rest of your system — like a clean room just for this project. Strongly recommended but not mandatory.</p>
+
+      <div class="os-tabs">
+        <button class="os-tab active" onclick="switchOs('mac', this)">🍎 Mac / Linux</button>
+        <button class="os-tab" onclick="switchOs('win', this)">🪟 Windows</button>
+      </div>
+
+      <div id="os-mac">
+        <div class="code-wrap">
+          <div class="code-header">
+            <div class="code-dot-row"><span class="code-dot dot-red"></span><span class="code-dot dot-yellow"></span><span class="code-dot dot-green"></span></div>
+            <span class="code-lang-label">Terminal</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><span class="cm"># Create a folder for your Cairn projects</span>
+mkdir my-cairn-project
+cd my-cairn-project
+
+<span class="cm"># Create the virtual environment</span>
+python -m venv .venv
+
+<span class="cm"># Activate it</span>
+source .venv/bin/activate
+
+<span class="cm"># You'll see (.venv) appear at the start of your prompt — that means it's active</span></pre>
+        </div>
+      </div>
+
+      <div id="os-win" style="display:none;">
+        <div class="code-wrap">
+          <div class="code-header">
+            <div class="code-dot-row"><span class="code-dot dot-red"></span><span class="code-dot dot-yellow"></span><span class="code-dot dot-green"></span></div>
+            <span class="code-lang-label">PowerShell</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><span class="cm"># Create a folder for your Cairn projects</span>
+mkdir my-cairn-project
+cd my-cairn-project
+
+<span class="cm"># Create the virtual environment</span>
+python -m venv .venv
+
+<span class="cm"># Activate it</span>
+.venv\Scripts\activate
+
+<span class="cm"># You'll see (.venv) appear at the start of your prompt</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: install -->
+    <div class="card">
+      <div class="card-title">Step 2 of 3 — Install Cairn</div>
+
+      <div class="callout callout-warn" style="margin-top:0; margin-bottom:16px;">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-body">
+          <strong>Do NOT use <code>pip install cairn</code></strong>
+          <p>The name <code>cairn</code> on PyPI belongs to a completely different, unrelated package. Running <code>pip install cairn</code> will install the wrong thing. You must install directly from the local repo folder instead.</p>
+        </div>
+      </div>
+
+      <div class="callout callout-info" style="margin-bottom:16px;">
+        <span class="callout-icon">📦</span>
+        <div class="callout-body">
+          <strong>Install from the local repo folder</strong>
+          <p>Replace <code>C:\path\to\cairn9</code> with the actual path to the cloned repo on your machine. The folder must contain the <code>pyproject.toml</code> file.</p>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <div class="code-dot-row"><span class="code-dot dot-red"></span><span class="code-dot dot-yellow"></span><span class="code-dot dot-green"></span></div>
+          <span class="code-lang-label">Terminal / PowerShell</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="cm"># Step 1 — clone the repo (if you haven't already)</span>
+<span class="fn">git</span> clone https://github.com/your-org/cairn.git
+<span class="fn">cd</span> cairn
+
+<span class="cm"># Step 2 — install from the local folder (NOT from PyPI)</span>
+<span class="fn">pip</span> install <span class="str">.</span>
+
+<span class="cm"># Or if you want to edit the source and see changes immediately:</span>
+<span class="fn">pip</span> install <span class="str">-e .</span>    <span class="cm"># -e = "editable" mode</span></pre>
+      </div>
+
+      <p style="color:var(--muted); font-size:14px; margin-top:12px;">You'll see pip install from the local <code>pyproject.toml</code>. When it finishes, Cairn and all its requirements are ready.</p>
+
+      <div style="margin-top:16px;">
+        <div class="card-title">What gets installed automatically</div>
+        <table>
+          <thead><tr><th>Library</th><th>What it's for</th><th>Version</th></tr></thead>
+          <tbody>
+            <tr><td><code>cairn</code></td><td>The main toolkit — <strong>this is what you're installing</strong></td><td>latest</td></tr>
+            <tr><td><code>click</code></td><td>Powers the <code>cairn</code> command-line interface</td><td>≥ 8.3</td></tr>
+            <tr><td><code>PyYAML</code></td><td>Reads your <code>context-spec.yaml</code> files safely</td><td>latest</td></tr>
+            <tr><td><code>jsonschema</code></td><td>Validates spec files against the schema rules</td><td>≥ 4.0</td></tr>
+          </tbody>
+        </table>
+        <div class="callout callout-tip">
+          <span class="callout-icon">✅</span>
+          <div class="callout-body">
+            <strong>That's it — no extras needed</strong>
+            <p>Cairn intentionally keeps its dependencies minimal. You don't need Docker, a database, or any cloud services to get started.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: verify -->
+    <div class="card">
+      <div class="card-title">Step 3 of 3 — Verify the installation</div>
+      <p style="color:var(--muted); font-size:14px; margin-bottom:16px;">Run this to confirm Cairn installed correctly. You should see a list of available commands.</p>
+      <div class="code-wrap">
+        <div class="code-header">
+          <div class="code-dot-row"><span class="code-dot dot-red"></span><span class="code-dot dot-yellow"></span><span class="code-dot dot-green"></span></div>
+          <span class="code-lang-label">Terminal</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre>cairn --help</pre>
+      </div>
+
+      <p style="color:var(--muted); font-size:13px; margin-bottom:8px;">Expected output — if you see this, you're good to go:</p>
+      <div class="code-wrap">
+        <div class="code-header">
+          <div class="code-dot-row"><span class="code-dot dot-red"></span><span class="code-dot dot-yellow"></span><span class="code-dot dot-green"></span></div>
+          <span class="code-lang-label">Output</span>
+        </div>
+        <pre>Usage: cairn [OPTIONS] COMMAND [ARGS]...
+
+  Cairn — Context-first agentic workflow toolkit
+
+Commands:
+  <span class="pass">validate</span>         Validate a context spec against schema and graph rules
+  <span class="pass">dry-run</span>          Execute a spec with the mock adapter (no model needed)
+  <span class="pass">export-agents</span>    Generate self-contained agent files from a spec
+  <span class="pass">sme-walkthrough</span>  Open the SME knowledge capture tool in your browser</pre>
+      </div>
+
+      <div class="callout callout-warn">
+        <span class="callout-icon">🤔</span>
+        <div class="callout-body">
+          <strong>If you see "cairn: command not found"</strong>
+          <p>Your virtual environment may not be activated. Run <code>source .venv/bin/activate</code> (Mac/Linux) or <code>.venv\Scripts\activate</code> (Windows) and try again.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ════════════════════════════════════════════════
+       SECTION 2 — WHAT YOU GET
+  ═══════════════════════════════════════════════════ -->
+  <section class="section" id="what-you-get">
+    <div class="section-label">
+      <div class="step-circle blue">2</div>
+      <h2>What you just installed</h2>
+    </div>
+
+    <div class="card">
+      <p style="color:var(--muted); font-size:14px; margin-bottom:20px;">Cairn gives you four commands. Each does one focused job. Here's what they are and when you use them.</p>
+
+      <!-- Diagram: command flow -->
+      <div class="diagram-wrap">
+        <div class="diagram-title">🗺 The Cairn workflow — four commands, in order</div>
+        <div class="flow">
+          <div class="flow-node">
+            <div class="node-label">You write</div>
+            <div class="node-name">📄 context-spec<br>.yaml</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node">
+            <div class="node-label">Command 1</div>
+            <div class="node-name">cairn<br>validate</div>
+            <div class="node-owner">Check for errors</div>
+          </div>
+          <div class="flow-arrow pass">→</div>
+          <div class="flow-node">
+            <div class="node-label">Command 2</div>
+            <div class="node-name">cairn<br>dry-run</div>
+            <div class="node-owner">Simulate execution</div>
+          </div>
+          <div class="flow-arrow pass">→</div>
+          <div class="flow-node">
+            <div class="node-label">Command 3</div>
+            <div class="node-name">cairn<br>export-agents</div>
+            <div class="node-owner">Generate agent files</div>
+          </div>
+          <div class="flow-arrow pass">→</div>
+          <div class="flow-node end-node">
+            <div class="node-label">Command 4</div>
+            <div class="node-name">cairn<br>sme-walkthrough</div>
+            <div class="node-owner">Expert input tool</div>
+          </div>
+        </div>
+      </div>
+
+      <table>
+        <thead><tr><th>Command</th><th>Plain English</th><th>Needs a model?</th></tr></thead>
+        <tbody>
+          <tr><td><code>cairn validate</code></td><td>Check your spec file for errors — like a spell-checker for your workflow</td><td>No</td></tr>
+          <tr><td><code>cairn dry-run</code></td><td>Simulate your entire workflow from start to finish using a pretend adapter</td><td>No</td></tr>
+          <tr><td><code>cairn export-agents</code></td><td>Turn your spec into ready-to-use agent instruction files</td><td>No</td></tr>
+          <tr><td><code>cairn sme-walkthrough</code></td><td>Open a browser form so a domain expert can fill in their knowledge safely</td><td>No</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <div class="callout-body">
+          <strong>No AI model required to get started</strong>
+          <p>Every command above works without a language model, an API key, or internet access. Cairn is a specification and validation toolkit — you bring the AI model later when you're ready to run for real.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- What a context spec contains -->
+    <div class="card">
+      <div class="card-title">The key file: context-spec.yaml</div>
+      <p style="color:var(--muted); font-size:14px; margin-bottom:16px;">Everything Cairn does starts with one YAML file. Think of it as the "blueprint" for your AI workflow. It has four building blocks:</p>
+
+      <div class="spec-anatomy">
+        <div class="spec-block sb-blue">
+          <h4>📋 Stages</h4>
+          <ul>
+            <li>What each AI agent does</li>
+            <li>The agent's mission</li>
+            <li>Hard rules it must follow</li>
+          </ul>
+        </div>
+        <div class="spec-block sb-purple">
+          <h4>🚦 Gates</h4>
+          <ul>
+            <li>Human decision checkpoints</li>
+            <li>PASS / FAIL / ESCALATE outcomes</li>
+            <li>Named owner + checklist</li>
+          </ul>
+        </div>
+        <div class="spec-block sb-green">
+          <h4>🎓 SME Packs</h4>
+          <ul>
+            <li>Domain expert knowledge inputs</li>
+            <li>Named person + their role</li>
+            <li>Evidence citations + sign-off</li>
+          </ul>
+        </div>
+        <div class="spec-block sb-orange">
+          <h4>🔗 Evidence Bindings</h4>
+          <ul>
+            <li>Every claim cites its source</li>
+            <li>Audit trail built into structure</li>
+            <li>No unattributed assertions</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ════════════════════════════════════════════════
+       SECTION 3 — THE CHANGE MANAGEMENT EXAMPLE
+  ═══════════════════════════════════════════════════ -->
+  <section class="section" id="the-example">
+    <div class="section-label">
+      <div class="step-circle green">3</div>
+      <h2>The Change Management Example</h2>
+    </div>
+
+    <div class="card">
+      <p style="font-size:14px; color:var(--muted); margin-bottom:20px;">Cairn ships with a ready-made example: a production change management workflow. It's the perfect starting point because it covers every Cairn feature and is easy to understand without domain expertise.</p>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">📁</span>
+        <div class="callout-body">
+          <strong>Where to find it</strong>
+          <p>After installing Cairn, clone the repo to get the examples folder:<br>
+          <code>git clone https://github.com/your-org/cairn.git</code><br>
+          Then navigate to: <code>examples/change-management/context-spec.yaml</code></p>
+        </div>
+      </div>
+
+      <!-- Scenario card -->
+      <div style="background: linear-gradient(135deg, #eef1fe 0%, #f3e8ff 100%); border: 1px solid rgba(79,110,247,0.2); border-radius: 10px; padding: 20px; margin: 16px 0;">
+        <div style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--accent); margin-bottom:12px;">📖 Real-world scenario</div>
+        <p style="font-size:14px; color:var(--text); line-height:1.8;"><strong>A team wants to deploy a change to their production database.</strong> This is high-stakes: a bad change could cause an outage affecting thousands of users. Before anything happens, the change must be assessed, documented, approved by a Change Advisory Board (CAB), and reviewed after implementation. Every step needs a human sign-off. Every decision needs to be auditable six months from now.</p>
+        <p style="font-size:14px; color:var(--text); margin-top:12px;">This is exactly what the change-management example models.</p>
+      </div>
+    </div>
+
+    <!-- The workflow diagram -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">🗺 Change Management workflow — how it flows</div>
+
+      <svg width="100%" viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" style="max-width:720px; display:block; margin:0 auto;">
+        <!-- Stage 1 -->
+        <rect x="10" y="120" width="130" height="70" rx="8" fill="#eef1fe" stroke="#4f6ef7" stroke-width="2"/>
+        <text x="75" y="148" text-anchor="middle" font-size="10" font-weight="700" fill="#6b7280" font-family="sans-serif">STAGE 1</text>
+        <text x="75" y="165" text-anchor="middle" font-size="12" font-weight="700" fill="#1e2133" font-family="sans-serif">Assess</text>
+        <text x="75" y="181" text-anchor="middle" font-size="12" font-weight="700" fill="#1e2133" font-family="sans-serif">Impact</text>
+
+        <!-- Arrow 1 -->
+        <line x1="140" y1="155" x2="165" y2="155" stroke="#94a3b8" stroke-width="2"/>
+        <polygon points="165,150 175,155 165,160" fill="#94a3b8"/>
+
+        <!-- Gate 1 -->
+        <rect x="175" y="105" width="130" height="100" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+        <text x="240" y="130" text-anchor="middle" font-size="10" font-weight="700" fill="#7c3aed" font-family="sans-serif">🚦 GATE</text>
+        <text x="240" y="148" text-anchor="middle" font-size="11" font-weight="700" fill="#1e2133" font-family="sans-serif">Impact Review</text>
+        <text x="240" y="165" text-anchor="middle" font-size="10" fill="#6b7280" font-family="sans-serif">Owner:</text>
+        <text x="240" y="180" text-anchor="middle" font-size="10" fill="#6b7280" font-family="sans-serif">change_manager</text>
+        <text x="240" y="197" text-anchor="middle" font-size="10" font-weight="700" fill="#16a34a" font-family="sans-serif">PASS / FAIL / ESCALATE</text>
+
+        <!-- Arrow 2 -->
+        <line x1="305" y1="155" x2="330" y2="155" stroke="#16a34a" stroke-width="2"/>
+        <polygon points="330,150 340,155 330,160" fill="#16a34a"/>
+        <text x="317" y="147" text-anchor="middle" font-size="9" font-weight="700" fill="#16a34a" font-family="sans-serif">PASS</text>
+
+        <!-- Stage 2 -->
+        <rect x="340" y="120" width="130" height="70" rx="8" fill="#eef1fe" stroke="#4f6ef7" stroke-width="2"/>
+        <text x="405" y="148" text-anchor="middle" font-size="10" font-weight="700" fill="#6b7280" font-family="sans-serif">STAGE 2</text>
+        <text x="405" y="165" text-anchor="middle" font-size="12" font-weight="700" fill="#1e2133" font-family="sans-serif">Document</text>
+        <text x="405" y="181" text-anchor="middle" font-size="12" font-weight="700" fill="#1e2133" font-family="sans-serif">Change</text>
+
+        <!-- Arrow 3 -->
+        <line x1="470" y1="155" x2="495" y2="155" stroke="#94a3b8" stroke-width="2"/>
+        <polygon points="495,150 505,155 495,160" fill="#94a3b8"/>
+
+        <!-- Gate 2 (CAB) -->
+        <rect x="505" y="105" width="130" height="100" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+        <text x="570" y="130" text-anchor="middle" font-size="10" font-weight="700" fill="#7c3aed" font-family="sans-serif">🚦 GATE</text>
+        <text x="570" y="148" text-anchor="middle" font-size="11" font-weight="700" fill="#1e2133" font-family="sans-serif">CAB Approval</text>
+        <text x="570" y="165" text-anchor="middle" font-size="10" fill="#6b7280" font-family="sans-serif">Owner:</text>
+        <text x="570" y="180" text-anchor="middle" font-size="10" fill="#6b7280" font-family="sans-serif">change_advisory_board</text>
+        <text x="570" y="197" text-anchor="middle" font-size="10" font-weight="700" fill="#16a34a" font-family="sans-serif">PASS / FAIL / ESCALATE</text>
+
+        <!-- Stage 3 (below) -->
+        <rect x="340" y="240" width="130" height="60" rx="8" fill="#eef1fe" stroke="#4f6ef7" stroke-width="2"/>
+        <text x="405" y="264" text-anchor="middle" font-size="10" font-weight="700" fill="#6b7280" font-family="sans-serif">STAGE 3</text>
+        <text x="405" y="281" text-anchor="middle" font-size="12" font-weight="700" fill="#1e2133" font-family="sans-serif">Execute Change</text>
+
+        <!-- Arrow from Gate 2 down -->
+        <line x1="570" y1="205" x2="570" y2="240" stroke="#16a34a" stroke-width="2"/>
+        <line x1="570" y1="240" x2="475" y2="270" stroke="#16a34a" stroke-width="2"/>
+        <polygon points="470,265 480,275 478,263" fill="#16a34a"/>
+        <text x="590" y="225" font-size="9" font-weight="700" fill="#16a34a" font-family="sans-serif">PASS</text>
+
+        <!-- Gate 3 (PIR) -->
+        <rect x="10" y="225" width="130" height="90" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+        <text x="75" y="248" text-anchor="middle" font-size="10" font-weight="700" fill="#7c3aed" font-family="sans-serif">🚦 GATE</text>
+        <text x="75" y="264" text-anchor="middle" font-size="10" font-weight="700" fill="#1e2133" font-family="sans-serif">Post-Impl Review</text>
+        <text x="75" y="280" text-anchor="middle" font-size="10" fill="#6b7280" font-family="sans-serif">Owner:</text>
+        <text x="75" y="295" text-anchor="middle" font-size="10" fill="#6b7280" font-family="sans-serif">change_manager</text>
+        <text x="75" y="309" text-anchor="middle" font-size="10" font-weight="700" fill="#16a34a" font-family="sans-serif">PASS / FAIL</text>
+
+        <!-- Arrow from Stage 3 to Gate 3 -->
+        <line x1="340" y1="270" x2="140" y2="270" stroke="#94a3b8" stroke-width="2"/>
+        <polygon points="140,265 130,270 140,275" fill="#94a3b8"/>
+
+        <!-- Labels top -->
+        <text x="75" y="30" text-anchor="middle" font-size="11" fill="#6b7280" font-family="sans-serif">📄 Spec file tells Cairn</text>
+        <text x="75" y="46" text-anchor="middle" font-size="11" fill="#6b7280" font-family="sans-serif">what each stage does</text>
+        <text x="240" y="30" text-anchor="middle" font-size="11" fill="#7c3aed" font-family="sans-serif">Human must decide</text>
+        <text x="240" y="46" text-anchor="middle" font-size="11" fill="#7c3aed" font-family="sans-serif">before next stage runs</text>
+        <text x="405" y="30" text-anchor="middle" font-size="11" fill="#6b7280" font-family="sans-serif">After gate PASS,</text>
+        <text x="405" y="46" text-anchor="middle" font-size="11" fill="#6b7280" font-family="sans-serif">next stage begins</text>
+      </svg>
+    </div>
+
+    <!-- The actual spec file -->
+    <div class="card">
+      <div class="card-title">The actual file — examples/change-management/context-spec.yaml</div>
+      <p style="color:var(--muted); font-size:14px; margin-bottom:16px;">This is the complete spec file that comes with Cairn. Read through it — every part is annotated to explain what it does.</p>
+      <div class="code-wrap">
+        <div class="code-header">
+          <div class="code-dot-row"><span class="code-dot dot-red"></span><span class="code-dot dot-yellow"></span><span class="code-dot dot-green"></span></div>
+          <span class="code-lang-label">examples/change-management/context-spec.yaml</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="cm"># The schema version — always starts with this</span>
+<span class="kw">apiVersion</span><span class="op">:</span> <span class="str">cairn/v1alpha</span>
+<span class="cm"># A unique ID for this spec</span>
+<span class="kw">spec_id</span><span class="op">:</span> <span class="str">change-management</span>
+<span class="kw">description</span><span class="op">:</span> <span class="op">></span>
+  Governance workflow for evaluating and approving infrastructure
+  and software changes in regulated environments.
+
+<span class="cm"># ─── STAGES ────────────────────────────────────────────────────</span>
+<span class="cm"># Each stage = one AI agent's job description</span>
+<span class="kw">stages</span><span class="op">:</span>
+
+  <span class="op">-</span> <span class="kw">stage_id</span><span class="op">:</span> <span class="str">assess_impact</span>           <span class="cm"># unique ID for this stage</span>
+    <span class="kw">mission</span><span class="op">:</span> <span class="op">></span>
+      Analyze the scope, risk classification, and blast radius of
+      the proposed change against the current system state.
+    <span class="kw">hard_rules</span><span class="op">:</span>                        <span class="cm"># rules the agent MUST follow</span>
+      <span class="op">-</span> <span class="str">Must classify change as standard, normal, or emergency</span>
+      <span class="op">-</span> <span class="str">Must identify all affected systems and downstream dependencies</span>
+      <span class="op">-</span> <span class="str">Must produce a rollback plan before proceeding</span>
+    <span class="kw">gate</span><span class="op">:</span> <span class="str">impact_review</span>              <span class="cm"># which human gate runs after this stage</span>
+
+  <span class="op">-</span> <span class="kw">stage_id</span><span class="op">:</span> <span class="str">document_change</span>
+    <span class="kw">mission</span><span class="op">:</span> <span class="op">></span>
+      Produce a change record with full traceability to the triggering
+      requirement, risk assessment, and rollback procedure.
+    <span class="kw">hard_rules</span><span class="op">:</span>
+      <span class="op">-</span> <span class="str">Change record must reference the upstream ticket or requirement</span>
+      <span class="op">-</span> <span class="str">Rollback procedure must be step-by-step and owner-assigned</span>
+      <span class="op">-</span> <span class="str">Emergency changes must include a post-implementation review date</span>
+    <span class="kw">gate</span><span class="op">:</span> <span class="str">cab_approval</span>
+
+  <span class="op">-</span> <span class="kw">stage_id</span><span class="op">:</span> <span class="str">execute_change</span>
+    <span class="kw">mission</span><span class="op">:</span> <span class="op">></span>
+      Carry out the approved change within the maintenance window,
+      following the documented procedure exactly.
+    <span class="kw">hard_rules</span><span class="op">:</span>
+      <span class="op">-</span> <span class="str">No deviation from the approved procedure without escalation</span>
+      <span class="op">-</span> <span class="str">Execution must be recorded with timestamps and executor identity</span>
+    <span class="kw">gate</span><span class="op">:</span> <span class="str">post_implementation_review</span>
+
+<span class="cm"># ─── GATES ─────────────────────────────────────────────────────</span>
+<span class="cm"># Each gate = a human decision point with an explicit checklist</span>
+<span class="kw">gates</span><span class="op">:</span>
+
+  <span class="kw">impact_review</span><span class="op">:</span>
+    <span class="kw">gate_id</span><span class="op">:</span> <span class="str">impact_review</span>
+    <span class="kw">owner</span><span class="op">:</span>   <span class="str">change_manager</span>         <span class="cm"># named role who makes the decision</span>
+    <span class="kw">outcomes</span><span class="op">:</span>
+      <span class="op">-</span> PASS
+      <span class="op">-</span> FAIL
+      <span class="op">-</span> ESCALATE
+    <span class="kw">checklist</span><span class="op">:</span>                       <span class="cm"># what they must verify before deciding</span>
+      <span class="op">-</span> <span class="str">Impact classification assigned (standard/normal/emergency)</span>
+      <span class="op">-</span> <span class="str">All affected systems identified</span>
+      <span class="op">-</span> <span class="str">Rollback plan documented</span>
+
+  <span class="kw">cab_approval</span><span class="op">:</span>
+    <span class="kw">gate_id</span><span class="op">:</span> <span class="str">cab_approval</span>
+    <span class="kw">owner</span><span class="op">:</span>   <span class="str">change_advisory_board</span>
+    <span class="kw">outcomes</span><span class="op">:</span> [PASS, FAIL, ESCALATE]
+    <span class="kw">checklist</span><span class="op">:</span>
+      <span class="op">-</span> <span class="str">Change record complete and traceable</span>
+      <span class="op">-</span> <span class="str">Risk mitigation steps documented</span>
+      <span class="op">-</span> <span class="str">Maintenance window confirmed with stakeholders</span>
+      <span class="op">-</span> <span class="str">Rollback procedure reviewed</span>
+
+  <span class="kw">post_implementation_review</span><span class="op">:</span>
+    <span class="kw">gate_id</span><span class="op">:</span> <span class="str">post_implementation_review</span>
+    <span class="kw">owner</span><span class="op">:</span>   <span class="str">change_manager</span>
+    <span class="kw">outcomes</span><span class="op">:</span> [PASS, FAIL, ESCALATE]
+    <span class="kw">checklist</span><span class="op">:</span>
+      <span class="op">-</span> <span class="str">Change executed as documented</span>
+      <span class="op">-</span> <span class="str">No unexpected side effects observed</span>
+      <span class="op">-</span> <span class="str">Change record closed with outcome</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ════════════════════════════════════════════════
+       SECTION 4 — RUN VALIDATE
+  ═══════════════════════════════════════════════════ -->
+  <section class="section" id="run-validate">
+    <div class="section-label">
+      <div class="step-circle green">4</div>
+      <h2>Run: <code style="font-size:18px;">cairn validate</code></h2>
+    </div>
+
+    <div class="card">
+      <p style="color:var(--muted); font-size:14px; margin-bottom:16px;"><strong style="color:var(--text);">What it does:</strong> Checks your spec file for errors in two passes. Pass 1 checks the YAML structure. Pass 2 checks that all internal references (stage → gate links, etc.) are consistent. A clean result means "zero errors guaranteed" — Cairn will never silently accept a broken spec.</p>
+
+      <div class="big-steps">
+        <div class="big-step">
+          <div class="big-step-num">1</div>
+          <div class="big-step-body">
+            <h3>Navigate to the repo root</h3>
+            <p>Make sure you're in the same folder as the <code>examples/</code> directory.</p>
+            <div class="code-wrap">
+              <div class="code-header"><div class="code-dot-row"><span class="code-dot dot-red"></span><span class="code-dot dot-yellow"></span><span class="code-dot dot-green"></span></div><span class="code-lang-label">Terminal</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>ls examples/change-management/
+<span class="cm"># You should see: context-spec.yaml   README.md   scenarios.md   templates/</span></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="big-step">
+          <div class="big-step-num">2</div>
+          <div class="big-step-body">
+            <h3>Run the validator</h3>
+            <div class="code-wrap">
+              <div class="code-header"><div class="code-dot-row"><span class="code-dot dot-red"></span><span class="code-dot dot-yellow"></span><span class="code-dot dot-green"></span></div><span class="code-lang-label">Terminal</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>cairn validate examples/change-management/context-spec.yaml</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="big-step">
+          <div class="big-step-num">3</div>
+          <div class="big-step-body">
+            <h3>Read the result</h3>
+            <div class="result-grid">
+              <div class="result-card rc-pass">
+                <h4>✅ If it passes</h4>
+                <p>Nothing is printed. Command exits silently. This means: <strong>zero errors, zero warnings</strong>. The spec is valid. You're ready to dry-run it.</p>
+              </div>
+              <div class="result-card rc-fail">
+                <h4>❌ If errors are found</h4>
+                <p>You'll see lines starting with <code>Error [Schema]:</code> or <code>Error [Graph]:</code> with the exact location of the problem.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- What the error messages look like -->
+      <div style="margin-top:24px;">
+        <div class="card-title">Understanding error messages</div>
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab('schema-err', this)">Schema Error (Phase 1)</div>
+          <div class="tab" onclick="switchTab('graph-err', this)">Graph Error (Phase 2)</div>
+          <div class="tab" onclick="switchTab('version-err', this)">Wrong apiVersion</div>
+        </div>
+
+        <div id="schema-err" class="tab-content active">
+          <div class="code-wrap">
+            <div class="code-header"><div class="code-dot-row"><span class="code-dot dot-red"></span><span class="code-dot dot-yellow"></span><span class="code-dot dot-green"></span></div><span class="code-lang-label">Output</span></div>
+            <pre><span class="err">Error [Schema]: 'stage_id' is a required property at stages[0]</span>
+<span class="cm"># Meaning: the first stage in your spec is missing the stage_id field</span>
+<span class="cm"># Fix: add   stage_id: my-stage-name   to that stage</span></pre>
+          </div>
+        </div>
+
+        <div id="graph-err" class="tab-content">
+          <div class="code-wrap">
+            <div class="code-header"><div class="code-dot-row"><span class="code-dot dot-red"></span><span class="code-dot dot-yellow"></span><span class="code-dot dot-green"></span></div><span class="code-lang-label">Output</span></div>
+            <pre><span class="err">Error [Graph]: Stage 'assess_impact' references gate 'impact_revew'</span>
+<span class="err">               which does not exist at stages[0].gate</span>
+<span class="cm"># Meaning: you have a typo — 'impact_revew' should be 'impact_review'</span>
+<span class="cm"># Phase 2 only runs if Phase 1 found zero errors</span></pre>
+          </div>
+        </div>
+
+        <div id="version-err" class="tab-content">
+          <div class="code-wrap">
+            <div class="code-header"><div class="code-dot-row"><span class="code-dot dot-red"></span><span class="code-dot dot-yellow"></span><span class="code-dot dot-green"></span></div><span class="code-lang-label">Output</span></div>
+            <pre><span class="err">Error [Schema]: Unknown apiVersion 'cairn/v2'. Supported: cairn/v1alpha</span>
+<span class="cm"># This runs BEFORE any other check — always.</span>
+<span class="cm"># Fix: change apiVersion to 'cairn/v1alpha' in your spec file</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ════════════════════════════════════════════════
+       SECTION 5 — RUN DRY-RUN
+  ═══════════════════════════════════════════════════ -->
+  <section class="section" id="run-dryrun">
+    <div class="section-label">
+      <div class="step-circle green">5</div>
+      <h2>Run: <code style="font-size:18px;">cairn dry-run</code></h2>
+    </div>
+
+    <div class="card">
+      <p style="color:var(--muted); font-size:14px; margin-bottom:16px;"><strong style="color:var(--text);">What it does:</strong> Simulates your entire workflow from beginning to end using a "mock adapter" — a pretend AI that stands in for your real model. Every stage runs, every gate evaluates, and audit records are saved to disk. No internet. No API key. No cost.</p>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <div class="code-dot-row"><span class="code-dot dot-red"></span><span class="code-dot dot-yellow"></span><span class="code-dot dot-green"></span></div>
+          <span class="code-lang-label">Terminal</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre>cairn dry-run examples/change-management/context-spec.yaml</pre>
+      </div>
+
+      <p style="color:var(--muted); font-size:13px; margin: 12px 0 8px;">You'll see this output — one line per stage and gate:</p>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <div class="code-dot-row"><span class="code-dot dot-red"></span><span class="code-dot dot-yellow"></span><span class="code-dot dot-green"></span></div>
+          <span class="code-lang-label">Output (annotated)</span>
+        </div>
+        <pre><span class="stage">[STAGE] assess_impact      → running</span>   <span class="cm">← Stage 1 starts</span>
+<span class="stage">[STAGE] assess_impact      → done</span>      <span class="cm">← Stage 1 finishes</span>
+<span class="gate">[GATE]  impact_review      → PASS (owner: change_manager)</span>   <span class="cm">← Gate 1: human decision</span>
+<span class="stage">[STAGE] document_change    → running</span>   <span class="cm">← Stage 2 starts</span>
+<span class="stage">[STAGE] document_change    → done</span>
+<span class="gate">[GATE]  cab_approval       → PASS (owner: change_advisory_board)</span>   <span class="cm">← CAB approves</span>
+<span class="stage">[STAGE] execute_change     → running</span>   <span class="cm">← Stage 3: the change is executed</span>
+<span class="stage">[STAGE] execute_change     → done</span>
+<span class="gate">[GATE]  post_implementation_review → PASS (owner: change_manager)</span>
+<span class="pass">Run complete. Gate records written to ./cairn-run-a3f7c291-8d2e-4f1a-b3c6.../</span></pre>
+      </div>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">📁</span>
+        <div class="callout-body">
+          <strong>A new folder appears in your directory</strong>
+          <p>After running, Cairn creates a folder called <code>cairn-run-&lt;unique-id&gt;/</code> in your current directory. This contains one JSON audit record per gate. Don't delete it — that's your audit trail.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ════════════════════════════════════════════════
+       SECTION 6 — UNDERSTAND THE OUTPUT
+  ═══════════════════════════════════════════════════ -->
+  <section class="section" id="understand-output">
+    <div class="section-label">
+      <div class="step-circle purple">6</div>
+      <h2>Understanding the output</h2>
+    </div>
+
+    <div class="card">
+      <div class="card-title">The gate record files</div>
+      <p style="color:var(--muted); font-size:14px; margin-bottom:16px;">Each gate in your spec creates one JSON file in the <code>cairn-run-&lt;id&gt;/</code> folder. This is the audit artifact. An auditor or compliance officer can read this file — alone, without talking to any developer — and reconstruct exactly what happened and who approved it.</p>
+
+      <div class="gate-record">
+        <div class="gate-record-header">
+          <span class="gr-icon">📋</span>
+          <span class="gr-title">cairn-run-a3f7c291.../gate_impact_review.json</span>
+          <span class="gr-badge">PASS</span>
+        </div>
+        <pre style="background:var(--code-bg);">{
+  <span class="str">"spec_id"</span><span class="op">:</span>         <span class="str">"change-management"</span>,
+  <span class="str">"run_id"</span><span class="op">:</span>          <span class="str">"a3f7c291-8d2e-4f1a-b3c6-9e7d0f2a4b85"</span>,
+  <span class="str">"gate_id"</span><span class="op">:</span>         <span class="str">"impact_review"</span>,
+  <span class="str">"decision"</span><span class="op">:</span>        <span class="str">"<span class="pass">PASS</span>"</span>,
+  <span class="str">"gate_owner"</span><span class="op">:</span>     <span class="str">"change_manager"</span>,
+  <span class="str">"checklist_items"</span><span class="op">:</span> [
+    { <span class="str">"item"</span><span class="op">:</span> <span class="str">"Impact classification assigned"</span>, <span class="str">"checked"</span><span class="op">:</span> <span class="kw">true</span> },
+    { <span class="str">"item"</span><span class="op">:</span> <span class="str">"All affected systems identified"</span>, <span class="str">"checked"</span><span class="op">:</span> <span class="kw">true</span> },
+    { <span class="str">"item"</span><span class="op">:</span> <span class="str">"Rollback plan documented"</span>, <span class="str">"checked"</span><span class="op">:</span> <span class="kw">true</span> }
+  ],
+  <span class="str">"timestamp"</span><span class="op">:</span>      <span class="str">"2026-05-20T14:23:07Z"</span>,
+  <span class="str">"spec_version"</span><span class="op">:</span>   <span class="str">"cairn/v1alpha"</span>
+}</pre>
+      </div>
+
+      <!-- What each field means -->
+      <table>
+        <thead><tr><th>Field</th><th>What it tells you</th></tr></thead>
+        <tbody>
+          <tr><td><code>spec_id</code></td><td>Which workflow spec this came from (<code>change-management</code>)</td></tr>
+          <tr><td><code>run_id</code></td><td>Unique ID for this specific execution — links all gate records from one run together</td></tr>
+          <tr><td><code>gate_id</code></td><td>Which gate this record covers (<code>impact_review</code>)</td></tr>
+          <tr><td><code>decision</code></td><td>The human decision: <strong>PASS</strong>, <strong>FAIL</strong>, or <strong>ESCALATE</strong></td></tr>
+          <tr><td><code>gate_owner</code></td><td>The named human role who made this decision</td></tr>
+          <tr><td><code>checklist_items</code></td><td>Every criterion that was evaluated — and whether it was checked</td></tr>
+          <tr><td><code>timestamp</code></td><td>Exactly when the decision was recorded (ISO 8601)</td></tr>
+          <tr><td><code>spec_version</code></td><td>Which schema version governed this run</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- The full picture diagram -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">🔍 What happens during a dry-run — from command to audit record</div>
+      <svg width="100%" viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg" style="max-width:700px; display:block; margin:0 auto;">
+        <!-- You -->
+        <rect x="5" y="70" width="110" height="60" rx="8" fill="#eef1fe" stroke="#4f6ef7" stroke-width="2"/>
+        <text x="60" y="97" text-anchor="middle" font-size="11" font-weight="700" fill="#4f6ef7" font-family="sans-serif">You run</text>
+        <text x="60" y="114" text-anchor="middle" font-size="10" fill="#6b7280" font-family="sans-serif">cairn dry-run</text>
+        <text x="60" y="128" text-anchor="middle" font-size="10" fill="#6b7280" font-family="sans-serif">spec.yaml</text>
+
+        <line x1="115" y1="100" x2="145" y2="100" stroke="#94a3b8" stroke-width="2"/><polygon points="145,95 155,100 145,105" fill="#94a3b8"/>
+
+        <!-- Cairn -->
+        <rect x="155" y="55" width="120" height="90" rx="8" fill="#1e2133" stroke="#4f6ef7" stroke-width="2"/>
+        <text x="215" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#4f6ef7" font-family="sans-serif">⛰ Cairn</text>
+        <text x="215" y="100" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="sans-serif">1. Loads spec</text>
+        <text x="215" y="116" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="sans-serif">2. Validates it</text>
+        <text x="215" y="132" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="sans-serif">3. Runs stages + gates</text>
+
+        <line x1="275" y1="100" x2="305" y2="100" stroke="#94a3b8" stroke-width="2"/><polygon points="305,95 315,100 305,105" fill="#94a3b8"/>
+
+        <!-- Mock adapter -->
+        <rect x="315" y="65" width="120" height="70" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+        <text x="375" y="90" text-anchor="middle" font-size="11" font-weight="700" fill="#7c3aed" font-family="sans-serif">Mock Adapter</text>
+        <text x="375" y="108" text-anchor="middle" font-size="10" fill="#6b7280" font-family="sans-serif">Simulates stages</text>
+        <text x="375" y="124" text-anchor="middle" font-size="10" fill="#6b7280" font-family="sans-serif">(no real model)</text>
+
+        <line x1="435" y1="100" x2="465" y2="100" stroke="#94a3b8" stroke-width="2"/><polygon points="465,95 475,100 465,105" fill="#94a3b8"/>
+
+        <!-- Output -->
+        <rect x="475" y="50" width="120" height="100" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+        <text x="535" y="75" text-anchor="middle" font-size="11" font-weight="700" fill="#16a34a" font-family="sans-serif">Output</text>
+        <text x="535" y="93" text-anchor="middle" font-size="10" fill="#6b7280" font-family="sans-serif">📊 Console output</text>
+        <text x="535" y="109" text-anchor="middle" font-size="10" fill="#6b7280" font-family="sans-serif">(stages + gates)</text>
+        <text x="535" y="127" text-anchor="middle" font-size="10" fill="#6b7280" font-family="sans-serif">📁 cairn-run-xxx/</text>
+        <text x="535" y="143" text-anchor="middle" font-size="10" fill="#6b7280" font-family="sans-serif">(audit JSON files)</text>
+
+        <!-- Labels below -->
+        <text x="60" y="165" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="sans-serif">One command</text>
+        <text x="215" y="165" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="sans-serif">Orchestrates everything</text>
+        <text x="375" y="165" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="sans-serif">No LLM required</text>
+        <text x="535" y="165" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="sans-serif">Ready for audit</text>
+      </svg>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ════════════════════════════════════════════════
+       SECTION 7 — NEXT STEPS
+  ═══════════════════════════════════════════════════ -->
+  <section class="section" id="next-steps">
+    <div class="section-label">
+      <div class="step-circle orange">7</div>
+      <h2>Next steps</h2>
+    </div>
+
+    <div class="card">
+      <p style="color:var(--muted); font-size:14px; margin-bottom:20px;">You've installed Cairn and run your first workflow. Here's where to go next, in order from beginner to advanced.</p>
+
+      <div class="big-steps">
+        <div class="big-step">
+          <div class="big-step-num">A</div>
+          <div class="big-step-body">
+            <h3>Start your own spec from the starter template</h3>
+            <p>Copy the blank template and fill in your own workflow. It has every required field with placeholder values and comments explaining what each one needs.</p>
+            <div class="code-wrap">
+              <div class="code-header"><div class="code-dot-row"><span class="code-dot dot-red"></span><span class="code-dot dot-yellow"></span><span class="code-dot dot-green"></span></div><span class="code-lang-label">Terminal</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre><span class="cm"># Copy the blank starter template to your project</span>
+cp templates/starter/context-spec.yaml my-workflow.yaml
+
+<span class="cm"># Edit it, then validate</span>
+cairn validate my-workflow.yaml</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="big-step">
+          <div class="big-step-num">B</div>
+          <div class="big-step-body">
+            <h3>Use the Cairn Consultant to design your workflow</h3>
+            <p>If you're not sure how to structure your workflow, skip the YAML entirely. The Cairn Consultant (a Claude Code skill) asks you three questions and produces the spec for you.</p>
+            <div class="callout callout-info" style="margin-top:8px;">
+              <span class="callout-icon">💬</span>
+              <div class="callout-body">
+                <strong>In Claude Code, type:</strong>
+                <p><code>/cairn-consultant</code> — then just answer the questions. No YAML knowledge needed.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="big-step">
+          <div class="big-step-num">C</div>
+          <div class="big-step-body">
+            <h3>Export agent files and connect to a real runtime</h3>
+            <p>Once your spec validates, generate the agent files and connect them to a real AI runtime like LangGraph, CrewAI, or the Claude Agent SDK.</p>
+            <div class="code-wrap">
+              <div class="code-header"><div class="code-dot-row"><span class="code-dot dot-red"></span><span class="code-dot dot-yellow"></span><span class="code-dot dot-green"></span></div><span class="code-lang-label">Terminal</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre><span class="cm"># Generate self-contained agent files from your spec</span>
+cairn export-agents examples/change-management/context-spec.yaml
+
+<span class="cm"># Opens the SME knowledge capture tool in your browser</span>
+cairn sme-walkthrough</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick reference card -->
+    <div class="card" style="background: linear-gradient(135deg, #1e2133, #2d3355); border-color: #4f6ef7; color: white;">
+      <div class="card-title" style="color: rgba(255,255,255,0.5);">⚡ Quick reference — all commands</div>
+      <table style="border-color: rgba(255,255,255,0.1);">
+        <thead>
+          <tr style="background: rgba(255,255,255,0.05);">
+            <th style="color:rgba(255,255,255,0.5);">Command</th>
+            <th style="color:rgba(255,255,255,0.5);">What it does</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-color: rgba(255,255,255,0.08);">
+            <td><code style="background:rgba(255,255,255,0.1); color:#60a5fa; border-color:rgba(255,255,255,0.15);">pip install .</code></td>
+            <td style="color:rgba(255,255,255,0.7);">Install from local repo folder (run from repo root)</td>
+          </tr>
+          <tr style="border-color: rgba(255,255,255,0.08);">
+            <td><code style="background:rgba(255,255,255,0.1); color:#60a5fa; border-color:rgba(255,255,255,0.15);">cairn --help</code></td>
+            <td style="color:rgba(255,255,255,0.7);">Show all available commands</td>
+          </tr>
+          <tr style="border-color: rgba(255,255,255,0.08);">
+            <td><code style="background:rgba(255,255,255,0.1); color:#4ade80; border-color:rgba(255,255,255,0.15);">cairn validate &lt;spec.yaml&gt;</code></td>
+            <td style="color:rgba(255,255,255,0.7);">Check spec for errors — always run this first</td>
+          </tr>
+          <tr style="border-color: rgba(255,255,255,0.08);">
+            <td><code style="background:rgba(255,255,255,0.1); color:#4ade80; border-color:rgba(255,255,255,0.15);">cairn dry-run &lt;spec.yaml&gt;</code></td>
+            <td style="color:rgba(255,255,255,0.7);">Simulate full workflow, produce audit records</td>
+          </tr>
+          <tr style="border-color: rgba(255,255,255,0.08);">
+            <td><code style="background:rgba(255,255,255,0.1); color:#a78bfa; border-color:rgba(255,255,255,0.15);">cairn export-agents &lt;spec.yaml&gt;</code></td>
+            <td style="color:rgba(255,255,255,0.7);">Generate agent instruction files</td>
+          </tr>
+          <tr>
+            <td><code style="background:rgba(255,255,255,0.1); color:#a78bfa; border-color:rgba(255,255,255,0.15);">cairn sme-walkthrough</code></td>
+            <td style="color:rgba(255,255,255,0.7);">Open expert knowledge capture tool in browser</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-tip">
+      <span class="callout-icon">🎉</span>
+      <div class="callout-body">
+        <strong>You're ready</strong>
+        <p>You know how to install Cairn, read a spec file, validate it, run a dry-run, and read the audit output. That's everything you need to start building governed agentic workflows. The <a href="cairn-user-guide.html" style="color:var(--green);">full user guide</a> covers all 6 epics in depth when you're ready to go further.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Footer -->
+<footer>
+  <p>Created by <strong>Amer Radwan</strong> <span class="heart">❤️</span></p>
+  <p style="margin-top:6px; font-size:12px;">Cairn — Context Stack Methodology &nbsp;·&nbsp; Apache-2.0 License &nbsp;·&nbsp; contextfirst.dev</p>
+</footer>
+
+<script>
+// ── Progress bar ──
+window.addEventListener('scroll', () => {
+  const el = document.documentElement;
+  const pct = (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+
+  // Update active nav link
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('.nav a');
+  let current = '';
+  sections.forEach(s => {
+    const top = s.getBoundingClientRect().top;
+    if (top < 120) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.classList.remove('active');
+    if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+  });
+});
+
+// ── Copy code ──
+function copyCode(btn) {
+  const pre = btn.closest('.code-wrap').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1800);
+  });
+}
+
+// ── OS tabs ──
+function switchOs(os, btn) {
+  document.querySelectorAll('.os-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('os-mac').style.display = os === 'mac' ? 'block' : 'none';
+  document.getElementById('os-win').style.display = os === 'win' ? 'block' : 'none';
+}
+
+// ── Error tabs ──
+function switchTab(id, btn) {
+  const allContents = document.querySelectorAll('.tab-content');
+  const allTabs = btn.parentElement.querySelectorAll('.tab');
+  allContents.forEach(c => c.classList.remove('active'));
+  allTabs.forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
